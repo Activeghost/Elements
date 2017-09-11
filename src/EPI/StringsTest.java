@@ -1,6 +1,13 @@
 package EPI;
 
 import java.util.*;
+
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -39,6 +46,77 @@ class StringsTest
 
 	@Test
 	void computeRollingHash() {
+	}
+
+	@Test
+	void decode()
+	{
+		String expectedDecodedText = "aaaabbcccd";
+		String encodedText = "4a2b3c1d";
+		Assert.assertEquals(expectedDecodedText, Strings.decode(encodedText));
+	}
+
+	@Test
+	void encode()
+	{
+		String plainText = "aaaabbcccd";
+		String expectedEncoding = "4a2b3c1d";
+		Assert.assertEquals(expectedEncoding, Strings.encode(plainText));
+
+		plainText = "aaaabbcccdddddddddddddddddddd";
+		expectedEncoding = "4a2b3c20d";
+		Assert.assertEquals(expectedEncoding, Strings.encode(plainText));
+	}
+
+	@Test
+	void getValidIpAddresses()
+	{
+		List<String> ipAddresses = Strings.getValidIpAddresses("19216811");
+		assertTrue(ipAddresses.size() == 9);
+	}
+
+	@Test
+	void romanToInt()
+	{
+		assertEquals(3, Strings.romanToInt("III"));
+		assertEquals(4, Strings.romanToInt("IIII"));
+		assertEquals(4, Strings.romanToInt("IV"));
+		assertEquals(5, Strings.romanToInt("V"));
+		assertEquals(9, Strings.romanToInt("IX"));
+		assertEquals(10, Strings.romanToInt("X"));
+		assertEquals(13, Strings.romanToInt("XIII"));
+		assertEquals(14, Strings.romanToInt("XIV"));
+		assertEquals(40, Strings.romanToInt("XL"));
+		assertEquals(50, Strings.romanToInt("L"));
+		assertEquals(90, Strings.romanToInt("XC"));
+		assertEquals(100, Strings.romanToInt("C"));
+		assertEquals(400, Strings.romanToInt("CD"));
+		assertEquals(500, Strings.romanToInt("D"));
+		assertEquals(900, Strings.romanToInt("CM"));
+		assertEquals(1000, Strings.romanToInt("M"));
+	}
+
+	@Test
+	void getLookAndSay()
+	{
+		assertEquals('2', Strings.getLookAndSay(5));
+		assertEquals('1', Strings.getLookAndSay(8));
+	}
+
+	@Test
+	void computePhoneNumberMnemonicsIterative()
+	{
+		String input = new String("2218677");
+		List<String> mnemonics = Strings.computePhoneNumberMnemonicsIterative(input);
+		assertTrue(mnemonics.size() == 1296);
+	}
+
+	@Test
+	void computePhoneNumberMnemonics()
+	{
+		String input = new String("2218677");
+		List<String> mnemonics = Strings.computePhoneNumberMnemonics(input);
+		assertTrue(mnemonics.size() == 1296);
 	}
 
 	@Test
