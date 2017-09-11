@@ -44,11 +44,6 @@ public class Strings
 	{
 	}
 
-	public static int find(String target, String s)
-	{
-
-	}
-
 	public static String decode(String encodedText)
 	{
 		char c = 0;
