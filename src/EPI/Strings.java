@@ -7,17 +7,158 @@ import java.util.*;
  */
 public class Strings
 {
+	class Data
+	{
+		String content;
+		int count;
+	}
+
+	static class DataComparator implements Comparator<Map.Entry<String, Integer>>{
+		public int compare(Map.Entry<String, Integer> a, Map.Entry<String, Integer> b)
+		{
+			Integer aValue = a.getValue();
+			Integer bValue = b.getValue();
+
+			if(aValue > bValue) { return 1;}
+			if(Objects.equals(aValue, bValue)) { return 0;}
+			return -1;
+		}
+	}
+
 	public Strings()
 	{
 	}
 
 	public static String encode(String data)
 	{
-
+		return "";
 	}
 
 	public static String decode(String encodedString)
 	{
+		return "";
+	}
+
+	static List<Map.Entry<String, Integer>> repeatedWords(String paragraph)
+	{
+		Map<String, Integer> dictionary = new TreeMap<>();
+		getWords(paragraph, dictionary);
+
+		// use the sorted property to iterate
+		Set<Map.Entry<String, Integer>> entrySet = dictionary.entrySet();
+		List<Map.Entry<String, Integer>> entries = new ArrayList<>(entrySet);
+		entries.sort(new DataComparator());
+
+		// print them as well
+		for(Map.Entry<String, Integer> entry : entries)
+		{
+			System.out.printf("%s : %d\n", entry.getKey(), entry.getValue());
+		}
+
+		// is in ascending order, so reverse the list.
+		Collections.reverse(entries);
+		return entries;
+	}
+
+	private static void addToMap(
+			Map<String, Integer> dictionary,
+			StringBuilder s)
+	{
+		String key = s.toString();
+		dictionary.merge(key, 1, (a, b) -> a + b);
+	}
+
+	public static void getWords(String paragraph, Map<String, Integer> dictionary) {
+		StringBuilder s = new StringBuilder();
+		for(int i = 0; i < paragraph.length(); i++)
+		{
+			char c = paragraph.charAt(i);
+			if(c == ' ')
+			{
+				addToMap(dictionary, s);
+				s = new StringBuilder();
+			}
+			else
+			{
+				s.append(c);
+			}
+		}
+
+		// add last word to map
+		addToMap(dictionary, s);
+	}
+
+	public static String boyerMoore(String target, String search)
+	{
+		int searchLen = search.length();
+
+		for(int i = 0; i < target.length(); i += searchLen)
+		{
+
+		}
+
+		return "";
+	}
+
+	public static int rabinKarp(String target, String substring)
+	{
+		if(target.length() < substring.length())
+		{
+			return -1;
+		}
+
+		final int BASE = 26;
+		int tHash = 0;
+		int sHash = 0;
+		int powerS = 1;
+
+		for(int i = 0; i < substring.length(); i++)
+		{
+			// if I is greater than 0 then multiply this by the BASE and assign
+			powerS = i > 0 ? powerS * BASE : 1;
+			tHash = tHash * BASE + target.charAt(i);
+			sHash = sHash * BASE + substring.charAt(i);
+		}
+
+		return 0;
+	}
+
+	/**
+	 * Rabin fingerprint hash function
+	 * @param pattern
+	 * @return
+	 */
+	public static double computeHash(String pattern)
+	{
+		final int BASE = 101;
+		int power = pattern.length() - 1;
+		double newHash = 0;
+
+		for(int i = 0; i < pattern.length(); i++)
+		{
+			newHash += pattern.charAt(i) * Math.pow(BASE, power);
+		}
+
+		return newHash;
+	}
+
+	/**
+	 * Compute rolling hash
+	 * @param len
+	 * @param dropped
+	 * @param added
+	 * @param oldHashValue
+	 * @return
+	 */
+	public static double computeRollingHash(
+			int len,
+			char dropped,
+			char added,
+			double oldHashValue)
+	{
+		final int BASE = 101;
+		int power = len - 1;
+		return (BASE * (oldHashValue - dropped * Math.pow(BASE, power))) + added * Math.pow(BASE, 0);
 	}
 
 	/**
