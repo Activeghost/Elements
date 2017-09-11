@@ -12,6 +12,7 @@ import javax.management.AttributeList;
 import org.junit.Assert;
 import org.junit.Test;
 
+
 /**
  * Created by clester on 7/30/2017.
  */
@@ -423,5 +424,90 @@ public class ArraysTest
 		Double average = java.util.Arrays.stream(values).average().orElse(0);
 		double stdDev = standardDeviation(values, average);
 		return (stdDev  * 100.0) / average;
+	}
+
+
+	@Test
+	public void advanceAndWin() throws Exception
+	{
+		int[] winningState = new int[] {3,3,1,0,2,0,1};
+		int[] losingState = new int[] {3,2,0,0,2,0,1};
+
+		Assert.assertTrue(ArrayOperations.advanceAndWin(winningState));
+		Assert.assertFalse(ArrayOperations.advanceAndWin(losingState));
+	}
+	@Test
+	public void advanceAndWin2() throws Exception
+	{
+		int[] winningState = new int[] {3,3,1,0,2,0,1};
+		int[] losingState = new int[] {3,2,0,0,2,0,1};
+
+		Assert.assertTrue(ArrayOperations.advanceAndWin2(winningState));
+		Assert.assertFalse(ArrayOperations.advanceAndWin2(losingState));
+	}
+
+	@Test
+	public void multiply() throws Exception
+	{
+		List<Integer> multiplier = new ArrayList<Integer>();
+		multiplier.add(9);
+		multiplier.add(9);
+		multiplier.add(9);
+		multiplier.add(9);
+
+		List<Integer> multiplicand = new ArrayList<Integer>();
+		multiplicand.add(9);
+		multiplicand.add(9);
+		multiplicand.add(9);
+		multiplicand.add(9);
+
+		List<Integer> expected = new ArrayList<Integer>();
+		expected.add(9);
+		expected.add(9);
+		expected.add(9);
+		expected.add(8);
+		expected.add(0);
+		expected.add(0);
+		expected.add(0);
+		expected.add(1);
+
+		List<Integer> total = ArrayOperations.multiply(multiplicand, multiplier);
+		Assert.assertEquals(expected, total);
+	}
+
+	@Test
+	public void plusOneFinite() throws Exception
+	{
+		List<Integer> numbers = new ArrayList<Integer>();
+		numbers.add(9);
+		numbers.add(9);
+		numbers.add(9);
+		numbers.add(9);
+
+		ArrayOperations.plusOneFinite(numbers);
+		Assert.assertTrue(numbers.size() == 5);
+		Assert.assertArrayEquals(numbers.toArray(), new Integer[] { 1, 0, 0, 0, 0 });
+	}
+
+	@org.junit.Test
+	public void reOrder() throws Exception
+	{
+	}
+
+	@org.junit.Test
+	public void pivot() throws Exception
+	{
+		List<Color> colors = new ArrayList<Color>();
+		colors.add(Color.RED);
+		colors.add(Color.WHITE);
+		colors.add(Color.RED);
+		colors.add(Color.BLUE);
+		colors.add(Color.RED);
+		colors.add(Color.BLUE);
+		colors.add(Color.BLUE);
+		colors.add(Color.WHITE);
+		colors.add(Color.WHITE);
+
+		ArrayOperations.pivot(5, colors);
 	}
 }

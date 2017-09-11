@@ -4,8 +4,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
 /**
  * Created by clester on 7/31/2017.
  */
@@ -14,6 +12,14 @@ public class BitsTest
 	@Before
 	public void setUp() throws Exception
 	{
+	}
+
+	@Test
+	public void powerTest() throws Exception
+	{
+		Assert.assertTrue(Bits.power(4,-1) == .25);
+		Assert.assertTrue(Bits.power(10,2) == 100);
+		Assert.assertTrue(Bits.power(4,4) == 256);
 	}
 
 	@Test

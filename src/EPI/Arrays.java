@@ -27,6 +27,13 @@ import javafx.util.Pair;
  */
 public class Arrays
 {
+	enum Color
+	{
+		RED,
+		WHITE,
+		BLUE
+	}
+
 	public static final Timer timer = new Timer();
 	public static final List<int[]> samples = new ArrayList<>();
 
@@ -45,6 +52,208 @@ public class Arrays
 			System.arraycopy(src[i], 0, target[i], 0, src[i].length);
 		}
 		return target;
+	}
+
+
+	// reorder the array such that either even or odd is first
+	public static void reOrder(int[] a, boolean even)
+	{
+		int beginning = 0;
+		int end = a.length - 1;
+
+		int nextEven;
+		int nextOdd;
+
+		if (even)
+		{
+			nextEven = beginning;
+			nextOdd = end;
+		}
+		else
+		{
+			nextEven = end;
+			nextOdd = beginning;
+		}
+
+		while (nextEven < nextOdd)
+		{
+			if (a[nextEven] % 2 == 0)
+			{
+				nextEven++;
+			}
+			else
+			{
+				int temp = a[nextEven];
+				a[nextEven] = a[nextOdd];
+				a[nextOdd] = temp;
+			}
+		}
+	}
+
+	public static void pivot(int pivot, List<Color> colors)
+	{
+		int smallerThanIndex = 0;
+		int currentIndex = 0;
+		int largerThanIndex = colors.size() - 1;
+
+		Color pivotValue = colors.get(pivot);
+
+		for (Color t : colors)
+		{
+			if (t.ordinal() < pivotValue.ordinal())
+			{
+				Collections.swap(colors, currentIndex, smallerThanIndex);
+				smallerThanIndex++;
+			}
+
+			currentIndex++;
+		}
+
+		currentIndex = 0;
+		for (Color t : colors.subList(smallerThanIndex, largerThanIndex))
+		{
+			if (t.ordinal() > pivotValue.ordinal())
+			{
+				Collections.swap(colors, currentIndex, largerThanIndex);
+				largerThanIndex--;
+			}
+
+			currentIndex++;
+		}
+
+	}
+
+	public static void reOrder(List<Color> colors)
+	{
+		int smallerThanIndex = 0;
+		int currentIndex = 0;
+		int largerThanIndex = colors.size() - 1;
+
+		// choose arbitrary pivot value
+		Color pivotValue = colors.get(largerThanIndex / 2);
+
+		for (Color t : colors)
+		{
+			if (t.ordinal() < pivotValue.ordinal())
+			{
+				Collections.swap(colors, currentIndex, smallerThanIndex);
+				smallerThanIndex++;
+			}
+			else if (t.ordinal() > pivotValue.ordinal())
+			{
+				Collections.swap(colors, currentIndex, largerThanIndex);
+				largerThanIndex--;
+			}
+
+			currentIndex++;
+		}
+	}
+
+	public static void plusOneFinite(List<Integer> numbers)
+	{
+		int index = numbers.size() - 1;
+		numbers.set(index, numbers.get(index) + 1);
+
+		for (int i = index; i > 0; --i)
+		{
+			if (numbers.get(i) == 10)
+			{
+				numbers.set(i, 0);
+				numbers.set(i - 1, numbers.get(i - 1) + 1);
+			}
+		}
+
+		// check if we have a 1 to carry forward with no more digits in the array to add it too.
+		if (numbers.get(0) == 10)
+		{
+			numbers.set(0, 0);
+			numbers.add(0, 1);
+		}
+	}
+
+	/**
+	 * Multiple two arbitrary precision integers
+	 *
+	 * @param m List representing integer one
+	 * @param n List representing integer two
+	 */
+	public static List<Integer> multiply(List<Integer> m, List<Integer> n)
+	{
+		int totalSize = m.size() + n.size();
+		Integer[] scratchPad = new Integer[totalSize];
+		Arrays.fill(scratchPad, 0);
+
+		// use grade school algorithm.
+
+		// n.get(size()-1) * m[*]
+		for (int nCol = n.size() - 1; nCol >= 0; nCol--)
+		{
+			int result;
+			int multiplier = n.get(nCol);
+
+			for (int mCol = m.size() - 1; mCol >= 0; --mCol)
+			{
+				int multiplicand = m.get(mCol);
+				result = (multiplicand * multiplier) + scratchPad[nCol + mCol + 1];
+				scratchPad[nCol + mCol] = scratchPad[nCol + mCol] + result / 10;
+				scratchPad[nCol + mCol + 1] = result % 10;
+			}
+		}
+
+		return Arrays.asList(scratchPad);
+	}
+
+	public static boolean advanceAndWin(int[] gameState)
+	{
+		int x = 0;
+		while (x < gameState.length - 1)
+		{
+			if (x == 0)
+			{
+				return false;
+			}
+			x += gameState[x];
+		}
+
+		return true;
+	}
+
+	/**
+	 * Each index in the incoming array is a node in the graph which contains the data, n = array[i]
+	 * The vertex is a connection of weight N to the node of that ID (index)
+	 *
+	 * @param gameState
+	 * @return
+	 */
+	public static boolean advanceAndWin2(int[] gameState)
+	{
+		int size = gameState.length - 1;
+		List<Node> nodes = new ArrayList<>(size);
+		final int endId = 9999;
+
+		// walk backward to build the graph
+		for (int index = size; index >= 0; index--)
+		{
+			nodes.add(new Node(index));
+			int move = gameState[index];
+			int furthestReach = move + index;
+
+			// walk up the nodes adding edges until the next to last node
+			for (int j = index; j <= furthestReach && j < size; j++)
+			{
+				// add the new nodes to the end of the list
+				// and add this node as an adjacent node
+				nodes
+						.get(j)
+						.addEdge(index, furthestReach - j);
+			}
+		}
+
+		// use Djiktra's algorithm to return the shortest path to win.
+		DijkstraAlgorithm dijkstraAlgorithm = new DijkstraAlgorithm(nodes);
+		dijkstraAlgorithm.execute(nodes.get(0));
+		final LinkedList<Node> path = dijkstraAlgorithm.getPath(nodes.get(size));
+		return true;
 	}
 
 	public static <T> List<T> deleteDuplicatesUsingStream(List<T> input)

@@ -4,12 +4,12 @@ import java.util.*;
 
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 /**
  * Created by clester on 8/17/2017.
  */
-class StringsTest
+public class StringsTest
 {
 	@Test
 	void reverseWordsOof1()

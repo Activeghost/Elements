@@ -11,11 +11,13 @@ public class Strings
 	{
 	}
 
-	public static List<String> computePhoneNumberMnemonics(String number)
+	public static String encode(String data)
 	{
-		List<String> mnemonics = new ArrayList<>();
 
-		return mnemonics;
+	}
+
+	public static String decode(String encodedString)
+	{
 	}
 
 	/**
