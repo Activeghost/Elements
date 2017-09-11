@@ -9,12 +9,45 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by clester on 8/17/2017.
  */
 class StringsTest
 {
+	@Test
+	void repeatedWords() {
+		// normal testing would test boundary conditions for our paragraphs
+		// this is one of them, a string of 7 words, and all but one of them unique.
+		// also a palindrome.
+		String input = "Able I was ere saw I Elba";
+
+		List<Map.Entry<String, Integer>> list = Strings.repeatedWords(input);
+		assertEquals(6, list.size());
+
+		int count = Integer.MAX_VALUE;
+		for(Map.Entry<String, Integer> entry : list)
+		{
+			assertTrue(count >= entry.getValue());
+			count = entry.getValue();
+		}
+	}
+
+	@Test
+	void rabinKarp() {
+	}
+
+	@Test
+	void computeHash() {
+		String text = "abr";
+		assertEquals(999509,Strings.computeHash(text));
+	}
+
+	@Test
+	void computeRollingHash() {
+	}
+
 	@Test
 	void decode()
 	{
@@ -89,8 +122,8 @@ class StringsTest
 	@Test
 	void reverseWordsOof1()
 	{
-		String input = new String("Able I was ere saw I Elba");
-		String expected = new String("Elba I saw ere was I Able");
+		String input = "Able I was ere saw I Elba";
+		String expected = "Elba I saw ere was I Able";
 
 		final char[] charArray = input.toCharArray();
 		Strings.reverseWordsOof1(charArray);
@@ -100,8 +133,8 @@ class StringsTest
 	@Test
 	void reverseWords()
 	{
-		String input = new String("Able I was ere saw I Elba");
-		String expected = new String("Elba I saw ere was I Able");
+		String input = "Able I was ere saw I Elba";
+		String expected = "Elba I saw ere was I Able";
 		assertArrayEquals(expected.toCharArray(),
 				Strings.reverseWords(input.toCharArray()).toCharArray());
 	}
@@ -110,8 +143,8 @@ class StringsTest
 	void isPalindrome()
 	{
 		Character[] input = new Character[]{'a','b','c','c', 'b', 'a'};
-		String palinDrome = new String("Able I was, ere saw I Elba");
-		String notAPalinDrome = new String("Ray a Ray");
+		String palinDrome = "Able I was, ere saw I Elba";
+		String notAPalinDrome = "Ray a Ray";
 		assertTrue(Strings.isPalindrome(palinDrome));
 		assertFalse(Strings.isPalindrome(notAPalinDrome));
 	}
@@ -157,6 +190,7 @@ class StringsTest
 		assertEquals(1, Strings.getSpreadSheetNumber("A"));
 		assertEquals(27, Strings.getSpreadSheetNumber("AA"));
 		assertEquals(702, Strings.getSpreadSheetNumber("ZZ"));
+
 	}
 
 	@Test
@@ -183,6 +217,7 @@ class StringsTest
 		assertEquals(
 				new String(base16ExpectedResult),
 				Strings.baseConversion(new String(input), 2, 16));
+
 	}
 
 	@Test
