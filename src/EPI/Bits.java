@@ -10,6 +10,55 @@ import javafx.util.Pair;
  */
 public class Bits
 {
+	public static double powerAlt(double x, int y)
+	{
+		double result = 1.0;
+		int power = y;
+		if(power < 0)
+		{
+			power = -power;
+			x = 1.0 / x;
+		}
+
+		if((power & 1) != 0)
+		{
+			result *= x;
+			power--;
+		}
+
+		while(power != 1 || power != -1)
+		{
+			x *= x;
+			power >>>= 1;
+		}
+
+		return result * x;
+	}
+
+	public static double power(double x, int y)
+	{
+		double result = 1.0;
+		int power = y;
+		if(power < 0)
+		{
+			power = -power;
+			x = 1.0 / x;
+		}
+
+		while(power != 0)
+		{
+			if((power & 1) != 0)
+			{
+				result *= x;
+			}
+
+			x *= x;
+			power >>>= 1;
+		}
+
+		return result;
+	}
+
 	/**
 	 * Implement multiply using only bit operators
 	 * @param a

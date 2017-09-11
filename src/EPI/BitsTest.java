@@ -11,6 +11,24 @@ import static org.junit.Assert.*;
  */
 public class BitsTest
 {
+	@Test
+	public void powerAlt() throws Exception
+	{
+		Assert.assertTrue(Bits.powerAlt(3, 2) == 9);
+		Assert.assertTrue(Bits.powerAlt(4, -1) == .25);
+		Assert.assertTrue(Bits.powerAlt(10, 4) == 10000);
+		Assert.assertTrue(Bits.powerAlt(2, 8) == 256);
+	}
+
+	@Test
+	public void power() throws Exception
+	{
+		Assert.assertTrue(Bits.power(3, 2) == 9);
+		Assert.assertTrue(Bits.power(4, -1) == .25);
+		Assert.assertTrue(Bits.power(10, 4) == 10000);
+		Assert.assertTrue(Bits.power(2, 6) == 64);
+	}
+
 	@Before
 	public void setUp() throws Exception
 	{

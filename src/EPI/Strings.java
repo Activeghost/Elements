@@ -2,20 +2,320 @@ package EPI;
 
 import java.util.*;
 
+import javafx.util.Pair;
+
 /**
  * Created by clester on 8/16/2017.
  */
 public class Strings
 {
+	private static final String[] MAPPING = {
+			"0",
+			"1",
+			"ABC",
+			"DEF",
+			"HIG",
+			"JKL",
+			"MNO",
+			"PQRS",
+			"TUV",
+			"WXYZ"
+	};
+
 	public Strings()
 	{
+	}
+
+	public static int find(String target, String s)
+	{
+
+	}
+
+	public static String decode(String encodedText)
+	{
+		char c = 0;
+		int count = 0;
+		StringBuilder s = new StringBuilder();
+
+		for(int i = 0; i < encodedText.length();)
+		{
+			// handle numbers greater than 9
+			if(Character.isDigit(encodedText.charAt(i)))
+			{
+				count = count * 10 + encodedText.charAt(i++) - '0';
+			}
+			else
+			{
+				c = encodedText.charAt(i++);
+			}
+
+			// decode
+			while(count != 0)
+			{
+				s.append(c);
+				count--;
+			}
+		}
+
+		return s.toString();
+	}
+
+	public static String encode(String text)
+	{
+		int count = 0;
+		char prev = 0;
+		char c = 0;
+		StringBuilder s = new StringBuilder();
+
+		for(int i = 0; i < text.length(); i++)
+		{
+			c = text.charAt(i);
+			if (c == prev | prev == 0)
+			{
+				count++;
+			}
+			else
+			{
+				// encode
+				s.append(Integer.toString(count));
+				s.append(prev);
+
+				// reset counter (we've seen one already)
+				count = 1;
+			}
+
+			prev = c;
+		}
+
+		// handle the last char
+		s.append(Integer.toString(count));
+		s.append(c);
+
+		return s.toString();
+	}
+
+	/**
+	 * O(n^4) setup, O(n) run time thereafter ... which is better than the O(n^3) constant runtime
+	 * from the book.
+	 * @param candidate
+	 * @return
+	 */
+	public static List<String> getValidIpAddresses(String candidate)
+	{
+		// This would be retrieved once per session/run in a production env.
+		Map<Integer, List<String>> map = getIpPatternMap();
+
+		List<String> ipAddresses = new ArrayList<>();
+		List<String> matchedPatterns = map.get(candidate.length());
+		for(String pattern : matchedPatterns)
+		{
+			StringBuilder ip = new StringBuilder();
+			final int aLen = pattern.charAt(0) - '0';
+			final int bLen = pattern.charAt(1) - '0';
+			final int cLen = pattern.charAt(2) - '0';
+			final int dLen = pattern.charAt(3) - '0';
+
+			final String a = candidate.substring(
+					0,
+					aLen);
+
+			final String b = candidate.substring(
+					aLen,
+					aLen + bLen);
+
+			final String c = candidate.substring(
+					aLen + bLen,
+					aLen + bLen + cLen);
+
+			final String d = candidate.substring(candidate.length() - dLen);
+
+			boolean isValid = isValid(a) && isValid(b) && isValid(c) && isValid(d);
+			if(!isValid)
+			{
+				continue;
+			}
+
+			ip.append(a);
+			ip.append('.');
+
+			ip.append(b);
+			ip.append('.');
+
+			ip.append(c);
+			ip.append('.');
+
+			ip.append(d);
+			ipAddresses.add(ip.toString());
+		}
+
+		return ipAddresses;
+	}
+
+	private static boolean isValid(String mask)
+	{
+		return Integer.parseInt(mask) <= 255;
+	}
+
+	private static Map<Integer, List<String>> getIpPatternMap()
+	{
+		// Build a map of all possible patterns once
+		Map<Integer, List<String>> map = new HashMap<>();
+		for(int a = 1; a <= 3; a++)
+		{
+			for( int b = 1; b <= 3; b++)
+			{
+				for(int c = 1 ; c <= 3; c++)
+				{
+					for( int d = 1; d <= 3; d++)
+					{
+						final int patternCount = a + b + c + d;
+						List<String> patterns;
+						if(!map.containsKey(patternCount))
+						{
+							patterns = new ArrayList<>();
+							map.put(patternCount, patterns);
+						}
+						else
+						{
+							patterns = map.get(patternCount);
+						}
+
+						patterns.add(String.format("%1$d%2$d%3$d%4$d", a,b,c,d));
+					}
+				}
+			}
+		}
+
+		return map;
+	}
+
+	public static int romanToInt(String romanNumeral)
+	{
+		Map<Character, Integer> key = new HashMap<Character, Integer>()
+		{
+			{
+				put('I', 1);
+				put('V', 5);
+				put('X', 10);
+				put('L', 50);
+				put('C', 100);
+				put('D', 500);
+				put('M', 1000);
+			}
+		};
+
+		int sum = 0;
+		for(int i = romanNumeral.length() - 1; i >= 0; i--)
+		{
+			int value = key.get(romanNumeral.charAt(i));
+			int nextVal = 0;
+
+			if(i > 0)
+			{
+				nextVal = key.get(romanNumeral.charAt(i - 1));
+			}
+
+			if (nextVal < value && i > 0)
+			{
+				value -= nextVal;
+				i--;
+			}
+
+			sum += value;
+		}
+
+		return sum;
+	}
+
+	/**
+	 * Return the nth digit from a look and say sequence. e.g.,
+	 * {1} {11} {21} {1211} {111221} {312211} {132221} { 11133211}
+	 * One, One One, Two One(s), One Two and Two One(s)...
+	 * @param n
+	 */
+	public static char getLookAndSay(int n)
+	{
+		StringBuilder sequence = new StringBuilder("1");
+		int count = 0;
+		int index = 0;
+
+		while(sequence.length() < n)
+		{
+			// sum the count of consecutive integers of the same value
+			for(int i = 1; i < sequence.length(); i++)
+			{
+				int prev = sequence.charAt(i - 1) - '0';
+				int curr = sequence.charAt(i) - '0';
+
+				if(prev == curr)
+				{
+					continue;
+				}
+				else
+				{
+					sequence.setCharAt(index++, (char)(count - '0'));
+					sequence.setCharAt(index++, (char)(curr - '0'));
+				}
+			}
+		}
+
+		return sequence.charAt(n - 1);
+	}
+
+	public static List<String> computePhoneNumberMnemonicsIterative(String phoneNumber)
+	{
+		List<String> mnemonics = new ArrayList<>();
+		List<String> partial = new ArrayList<>();
+		mnemonics.add(" ");
+
+		for(int digit = 0; digit < phoneNumber.length(); digit++)
+		{
+			for (String str : mnemonics)
+			{
+				final String s = MAPPING[phoneNumber.charAt(digit) - '0'];
+				for(int i = 0 ; i < s.length(); i++)
+				{
+					partial.add(str + s.charAt(i));
+				}
+			}
+
+			mnemonics = partial;
+			partial = new ArrayList<>();
+		}
+
+		return mnemonics;
 	}
 
 	public static List<String> computePhoneNumberMnemonics(String number)
 	{
 		List<String> mnemonics = new ArrayList<>();
-
+		char[] partialMnemonic = new char[number.length()];
+		getPhoneNumberMnemonic(number,0, partialMnemonic, mnemonics);
 		return mnemonics;
+	}
+
+	private static void getPhoneNumberMnemonic(
+			String phoneNumber,
+			int digit,
+			char[] partial,
+			List<String> mnemonics)
+	{
+		// all digits processed so add the partial mnemonic as a new mnemonic
+		if(digit == phoneNumber.length())
+		{
+			mnemonics.add(new String(partial));
+		}
+		else
+		{
+			// try all possible characters for this digit
+			final String s = MAPPING[phoneNumber.charAt(digit) - '0'];
+			for(int i = 0; i < s.length(); i++)
+			{
+				char c = s.charAt(i);
+				partial[digit] = c;
+				getPhoneNumberMnemonic(phoneNumber, digit + 1, partial, mnemonics);
+			}
+		}
 	}
 
 	/**
