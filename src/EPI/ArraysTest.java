@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.OptionalDouble;
 import java.util.stream.Collectors;
-
+import EPI.Arrays.Color;
 import javax.management.AttributeList;
 
 import org.junit.Assert;
@@ -259,7 +259,7 @@ public class ArraysTest
 		int[] input = new int[] { 1, 3, 0, 5, 4, 2 };
 		double[] totals = new double[3];
 		double[] referenceTotal = new double[3];
-		List<List> allPossibleSamples = Arrays.getAllPossibleSamples(input, 3);
+		List<List<Integer>> allPossibleSamples = Arrays.getAllPossibleSamples(input, 3);
 		for(List<Integer> sample : allPossibleSamples)
 		{
 			int index = 0;
@@ -385,7 +385,7 @@ public class ArraysTest
 		_expectedRemoveResult.add(null);
 
 		Object[] array = _sortedIntegerList.toArray();
-		Object[] result = Arrays.<Object>removeDuplicates(array);
+		Object[] result = Arrays.removeDuplicates(array);
 		Assert.assertArrayEquals(_expectedRemoveResult.toArray(), result);
 	}
 
@@ -433,8 +433,8 @@ public class ArraysTest
 		int[] winningState = new int[] {3,3,1,0,2,0,1};
 		int[] losingState = new int[] {3,2,0,0,2,0,1};
 
-		Assert.assertTrue(ArrayOperations.advanceAndWin(winningState));
-		Assert.assertFalse(ArrayOperations.advanceAndWin(losingState));
+		Assert.assertTrue(Arrays.advanceAndWin(winningState));
+		Assert.assertFalse(Arrays.advanceAndWin(losingState));
 	}
 	@Test
 	public void advanceAndWin2() throws Exception
@@ -442,8 +442,8 @@ public class ArraysTest
 		int[] winningState = new int[] {3,3,1,0,2,0,1};
 		int[] losingState = new int[] {3,2,0,0,2,0,1};
 
-		Assert.assertTrue(ArrayOperations.advanceAndWin2(winningState));
-		Assert.assertFalse(ArrayOperations.advanceAndWin2(losingState));
+		Assert.assertTrue(Arrays.advanceAndWin2(winningState));
+		Assert.assertFalse(Arrays.advanceAndWin2(losingState));
 	}
 
 	@Test
@@ -471,7 +471,7 @@ public class ArraysTest
 		expected.add(0);
 		expected.add(1);
 
-		List<Integer> total = ArrayOperations.multiply(multiplicand, multiplier);
+		List<Integer> total = Arrays.multiply(multiplicand, multiplier);
 		Assert.assertEquals(expected, total);
 	}
 
@@ -484,7 +484,7 @@ public class ArraysTest
 		numbers.add(9);
 		numbers.add(9);
 
-		ArrayOperations.plusOneFinite(numbers);
+		Arrays.plusOneFinite(numbers);
 		Assert.assertTrue(numbers.size() == 5);
 		Assert.assertArrayEquals(numbers.toArray(), new Integer[] { 1, 0, 0, 0, 0 });
 	}
@@ -508,6 +508,6 @@ public class ArraysTest
 		colors.add(Color.WHITE);
 		colors.add(Color.WHITE);
 
-		ArrayOperations.pivot(5, colors);
+		Arrays.pivot(5, colors);
 	}
 }

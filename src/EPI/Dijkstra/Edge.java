@@ -1,3 +1,5 @@
+package EPI.Dijkstra;
+
 public class Edge
 {
     private final int _targetId;

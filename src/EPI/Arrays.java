@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -20,6 +21,8 @@ import java.util.stream.Collectors;
 
 import static EPI.Arrays.timer;
 
+import EPI.Dijkstra.DijkstraAlgorithm;
+import EPI.Dijkstra.Node;
 import javafx.util.Pair;
 
 /**
@@ -36,7 +39,6 @@ public class Arrays
 
 	public static final Timer timer = new Timer();
 	public static final List<int[]> samples = new ArrayList<>();
-
 	public static final int SAMPLE_SIZE = 5;
 
 	/**
@@ -181,7 +183,7 @@ public class Arrays
 	{
 		int totalSize = m.size() + n.size();
 		Integer[] scratchPad = new Integer[totalSize];
-		Arrays.fill(scratchPad, 0);
+		java.util.Arrays.fill(scratchPad, 0);
 
 		// use grade school algorithm.
 
@@ -200,7 +202,7 @@ public class Arrays
 			}
 		}
 
-		return Arrays.asList(scratchPad);
+		return java.util.Arrays.asList(scratchPad);
 	}
 
 	public static boolean advanceAndWin(int[] gameState)
@@ -725,10 +727,10 @@ public class Arrays
 		return java.util.Arrays.copyOfRange(sample, 0, sampleSize);
 	}
 
-	public static List<List> getAllPossibleSamples(int[] inputs, int sampleSize)
+	public static List<List<Integer>> getAllPossibleSamples(int[] inputs, int sampleSize)
 	{
 		Random random = new Random();
-		List<List> samples = new ArrayList<>();
+		List<List<Integer>> samples = new ArrayList<>();
 
 		// The elements in the set
 		final int setLength = inputs.length;

@@ -1,4 +1,4 @@
-package EPI;
+package EPI.Dijkstra;
 
 import java.util.Collections;
 import java.util.HashMap;
