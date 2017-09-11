@@ -1,7 +1,5 @@
 package EPI;
 
-import java.io.Console;
-import java.io.PrintWriter;
 import java.util.*;
 
 /**
@@ -34,21 +32,7 @@ public class Strings
 	static List<Map.Entry<String, Integer>> repeatedWords(String paragraph)
 	{
 		Map<String, Integer> dictionary = new TreeMap<>();
-		StringBuilder s = new StringBuilder();
-		for(int i = 0; i < paragraph.length(); i++)
-		{
-			char c = paragraph.charAt(i);
-			if(c == ' ')
-			{
-				addToMap(dictionary, s);
-				s = new StringBuilder();
-			}
-
-			s.append(c);
-		}
-
-		// add last word to map
-		addToMap(dictionary, s);
+		getWords(paragraph, dictionary);
 
 		// use the sorted property to iterate
 		Set<Map.Entry<String, Integer>> entrySet = dictionary.entrySet();
@@ -72,6 +56,26 @@ public class Strings
 	{
 		String key = s.toString();
 		dictionary.merge(key, 1, (a, b) -> a + b);
+	}
+
+	public static void getWords(String paragraph, Map<String, Integer> dictionary) {
+		StringBuilder s = new StringBuilder();
+		for(int i = 0; i < paragraph.length(); i++)
+		{
+			char c = paragraph.charAt(i);
+			if(c == ' ')
+			{
+				addToMap(dictionary, s);
+				s = new StringBuilder();
+			}
+			else
+			{
+				s.append(c);
+			}
+		}
+
+		// add last word to map
+		addToMap(dictionary, s);
 	}
 
 	public static String boyerMoore(String target, String search)
