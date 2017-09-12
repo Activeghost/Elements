@@ -7,6 +7,8 @@ import java.util.TreeMap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import EPI.Strings.StringOperations;
+
 /**
  * BTee test class
  */
@@ -39,7 +41,7 @@ public class BinaryTreeTest {
     {
         BinaryTree<String, Integer> tree = new BinaryTree<>(Integer::compare);
         Map<String, Integer> dictionary = new TreeMap<>();
-        Strings.getWords(paragraph, dictionary);
+        StringOperations.getWords(paragraph, dictionary);
 
         for(Map.Entry<String, Integer> entry : dictionary.entrySet())
         {
