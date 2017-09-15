@@ -4,9 +4,7 @@ import static java.lang.Integer.max;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by clester on 9/11/2017.
@@ -18,51 +16,66 @@ public class BoyerMoore
 	private int[] _delta2;
 
 	public static final int STRING_NOT_FOUND = -1;
+	private int[] _suffixWidths;
+	private int[] _suffixJumpTable;
 
-	public int search(String source, String pattern)
+	public List<Integer> search(String source, String pattern)
 	{
+		List<Integer> indexes = new ArrayList<>();
+
+		// setup our skip tables
+		preProcess(pattern);
+
 		int sourceLen = source.length();
 		int patternLen = pattern.length();
-		int targetIndex = patternLen - 1;
 
 		if(sourceLen < patternLen)
 		{
-			return STRING_NOT_FOUND;
+			return indexes;
 		}
 
 		if(sourceLen == 0 | patternLen == 0)
 		{
-			return STRING_NOT_FOUND;
+			return indexes;
 		}
 
-		// start at source[pattern length] and check backwards
-		for(int i = targetIndex; i < sourceLen - 1;)
+		int i = 0;
+		int j;
+
+		while(i <= sourceLen - patternLen)
 		{
-			final char c = source.charAt(i);
-			if(c == pattern.charAt(targetIndex))
+			j = patternLen - 1;
+
+			while(j >= 0 && pattern.charAt(j) == source.charAt(i + j))
 			{
-				i--;
-				targetIndex--;
-				continue;
+				j--;
 			}
 
-			i += max(_delta1[targetIndex], _delta2[targetIndex]);
-			if(i > sourceLen)
+			if(j < 0)
 			{
-				return -1;
+				// found an instance, add it.
+				indexes.add(i);
+				i += _suffixJumpTable[0];
 			}
-
-			targetIndex = patternLen - 1;
+			else
+			{
+				i += Math.max(_suffixJumpTable[j+1], j -_delta1[source.charAt(i + j)]);
+			}
 		}
 
-		return STRING_NOT_FOUND;
+		return indexes;
 	}
 
-	public void preCalculateDelta(String pattern)
+	private void preProcess(String pattern)
 	{
+		_suffixWidths = new int[pattern.length() + 1];
+		_suffixJumpTable = new int[pattern.length() + 1];
+
 		calculateDelta1(pattern);
-		calculateDelta2(pattern);
+		findShortestBorderSuffixes(pattern, _suffixJumpTable, _suffixWidths);
+		findWidestBorderSuffixes(pattern, _suffixJumpTable, _suffixWidths);
 	}
+
 
 	/**
 	 * Fills a table of the alphabet size with the jump values for a character mismatch.
@@ -81,47 +94,58 @@ public class BoyerMoore
 		for(int j = 0; j < m; j++)
 		{
 			a = pattern.charAt(j);
-			_delta1[a] = m - j - 1;
+			_delta1[a] = j;
 		}
 	}
 
-	/**
-	 * Case 1:
-	 *
-	 * Case 2:
-	 *
-	 * Otherwise: Jump to the next space over (N + 1)
-	 * @param pattern
-	 */
-	private List<Integer> calculateDelta2(String pattern)
+	private void findShortestBorderSuffixes(String pattern, int[] suffixJumpTable, int[] suffixWidths)
 	{
-		char a = 0;
-		int m = pattern.length();
-		int i = 0;
+		int m = pattern.length() - 1;
+		int i = m;
 		int j = m + 1;
 
-		List<Integer> f = new ArrayList<>();
-		List<Integer> suffix = new ArrayList();
-
-		// calculate the proper prefixes
+		// suffix preprocessing step 1
+		// where the pattern occurs somewhere else in the pattern
+		suffixWidths[i] = j;
 		while(i > 0)
 		{
-			while (j < m && pattern.charAt(i - 1) != pattern.charAt(j - 1))
+			while (j <= m &&
+				   j > 0 &&
+				   pattern.charAt(i - 1) != pattern.charAt(j - 1))
 			{
-				if(suffix.get(j) == 0) {
-					suffix.set(j, j - i);
-					j = f.get(j);
+				if(suffixJumpTable[j] == 0) {
+					suffixJumpTable[j] = j - i;
 				}
+
+				j = suffixWidths[j];
 			}
 
 			i--;
 			j--;
 
-			f.set(i, j);
+			suffixWidths[i] = j;
 		}
+	}
 
-		// calculate the proper suffixes
+	private void findWidestBorderSuffixes(String pattern, int[] suffix, int[] f)
+	{
+		int n = pattern.length();
+		int m = n - 1;
+		int j = f[0];
 
-		// find the borders (common between the two)
+		// suffix preprocessing step 2
+		// where the pattern occurs somewhere else in the pattern
+		for(int i = 0; i < m; i++)
+		{
+			if(suffix[i] ==0)
+			{
+				suffix[i] = j;
+			}
+
+			if(i == j)
+			{
+				j = f[j];
+			}
+		}
 	}
 }
