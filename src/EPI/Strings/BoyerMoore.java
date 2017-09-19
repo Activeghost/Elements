@@ -42,6 +42,7 @@ public class BoyerMoore
 		int i = 0;
 		int j;
 
+		// no need to continue if pattern is greater than remaining chars
 		while(i <= sourceLen - patternLen)
 		{
 			j = patternLen - 1;
@@ -59,6 +60,7 @@ public class BoyerMoore
 			}
 			else
 			{
+				// jump by the max of either the bad character index or the suffix boundary
 				i += Math.max(_suffixJumpTable[j+1], j -_delta1[source.charAt(i + j)]);
 			}
 		}
@@ -66,6 +68,10 @@ public class BoyerMoore
 		return indexes;
 	}
 
+	/**
+	 * Boyer Moore pre processing for bad character and good suffix heuristics
+	 * @param pattern
+	 */
 	private void preProcess(String pattern)
 	{
 		_suffixWidths = new int[pattern.length() + 1];
@@ -98,14 +104,23 @@ public class BoyerMoore
 		}
 	}
 
+	/**
+	 *
+	 * @param pattern
+	 * @param suffixJumpTable
+	 * @param suffixWidths
+	 */
 	private void findShortestBorderSuffixes(String pattern, int[] suffixJumpTable, int[] suffixWidths)
 	{
 		int m = pattern.length() - 1;
 		int i = m;
 		int j = m + 1;
 
-		// suffix preprocessing step 1
-		// where the pattern occurs somewhere else in the pattern
+		/*
+	    * Each entry f[i]contains the starting position of the widest border of the suffix of the
+		* pattern beginning at position i. The suffix ε beginning at position m has no border,
+	 	* therefore f[m] is set to m+1.
+		*/
 		suffixWidths[i] = j;
 		while(i > 0)
 		{
@@ -127,24 +142,30 @@ public class BoyerMoore
 		}
 	}
 
-	private void findWidestBorderSuffixes(String pattern, int[] suffix, int[] f)
+	/**
+	 *
+	 * @param pattern
+	 * @param suffixSkipTable
+	 * @param suffixWidths
+	 */
+	private void findWidestBorderSuffixes(String pattern, int[] suffixSkipTable, int[] suffixWidths)
 	{
 		int n = pattern.length();
 		int m = n - 1;
-		int j = f[0];
+		int j = suffixWidths[0];
 
-		// suffix preprocessing step 2
+		// suffix border preprocessing step 2
 		// where the pattern occurs somewhere else in the pattern
 		for(int i = 0; i < m; i++)
 		{
-			if(suffix[i] ==0)
+			if(suffixSkipTable[i] ==0)
 			{
-				suffix[i] = j;
+				suffixSkipTable[i] = j;
 			}
 
 			if(i == j)
 			{
-				j = f[j];
+				j = suffixWidths[j];
 			}
 		}
 	}
