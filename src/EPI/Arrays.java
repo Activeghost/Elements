@@ -792,7 +792,7 @@ public class Arrays
 		}
 
 		//shave off first int then get sub perms on remaining ints.
-		//...then insert the first into each position of each sub perm..recurse
+		//...then insertHead the first into each position of each sub perm..recurse
 
 		int first = inputs[0];
 		int[] remainder = java.util.Arrays.copyOfRange(inputs,1,inputs.length);

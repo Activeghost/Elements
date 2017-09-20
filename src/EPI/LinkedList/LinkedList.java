@@ -12,9 +12,12 @@ public class LinkedList<T> implements Iterable<ListNode<T>>
 	ListNode<T> _head;
 	private final Comparator<T> _comparator;
 	private int _count;
+	private ListNode<T> _tail;
 
 	public LinkedList(Comparator<T> comparator)
 	{
+		_head = null;
+		_tail = null;
 		_comparator = comparator;
 		_count = 0;
 	}
@@ -23,7 +26,7 @@ public class LinkedList<T> implements Iterable<ListNode<T>>
 	{
 		ListNode<T> node = new ListNode<>(_comparator);
 		node.data = data;
-		insert(node);
+		insertHead(node);
 	}
 
 	public ListNode<T> get(int index)
@@ -88,19 +91,40 @@ public class LinkedList<T> implements Iterable<ListNode<T>>
 			prevNode.next = Optional.ofNullable(prevNode.next.next)
 									.orElse(null);
 			_count--;
+
+			if(temp.equals(_head))
+			{
+				_head = prevNode;
+			}
+
+			if(temp.equals(_tail))
+			{
+				_tail = prevNode;
+			}
 		}
+		else if(_head.equals(node))
+		{
+			temp = _head;
+			_head = node.next;
+			_count--;
+		}
+
 
 		return temp;
 	}
 
 	/**
 	 * Inserts after a node
-	 * @param node the node to insert after
+	 * @param node the node to insertHead after
 	 * @param newNode the new node
 	 */
 	public void insertAfter(ListNode<T> node, ListNode<T> newNode)
 	{
-		newNode.next = node.next;
+		if(node.equals(_tail))
+		{
+			_tail = newNode;
+		}
+
 		node.next = newNode;
 		_count++;
 	}
@@ -109,11 +133,72 @@ public class LinkedList<T> implements Iterable<ListNode<T>>
 	 * Inserts a new node at the head of the list.
 	 * @param newNode
 	 */
-	public void insert(ListNode<T> newNode)
+	public void insertHead(ListNode<T> newNode)
 	{
-		newNode.next = _head;
-		_head = newNode;
-		_count++;
+		// if this is the first node, set the tail
+		if(_head == null)
+		{
+			mergeToTail(newNode);
+			_head = newNode;
+		}
+		else
+		{
+			mergeToHead(newNode);
+		}
+
+	}
+
+	/**
+	 * Merge the new node to the head of the list, setting the
+	 * last node in the chain's .next to the head.
+	 * @param newNode
+	 */
+	private void mergeToHead(ListNode<T> newNode)
+	{	ListNode<T> node = newNode;
+		ListNode<T> temp = _head;
+
+		Iterator<ListNode<T>> it = iterator();
+		_head = node;
+
+		while(it.hasNext())
+		{
+			node = it.next();
+			_count++;
+		}
+
+		node.next = temp;
+	}
+
+	/**
+	 * Inserts a new node at the end of the list.
+	 * @param newNode
+	 */
+	public void insertTail(ListNode<T> newNode)
+	{
+		mergeToTail(newNode);
+
+		if(_head == null)
+		{
+			_head = newNode;
+		}
+	}
+
+	private void mergeToTail(ListNode<T> newNode)
+	{
+		ListNode<T> node = newNode;
+
+		if(_tail != null)
+		{
+			_tail.next = newNode;
+		}
+
+		while(node != null)
+		{
+			_tail = node;
+			_count++;
+
+			node = node.next;
+		}
 	}
 
 	/**
@@ -179,7 +264,7 @@ public class LinkedList<T> implements Iterable<ListNode<T>>
 			@Override
 			public boolean hasNext()
 			{
-				return _cursor < size() && get(_cursor) != null;
+				return _cursor < _count && get(_cursor) != null;
 			}
 
 			@Override

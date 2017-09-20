@@ -1,7 +1,5 @@
 package EPI.LinkedList;
 
-import java.util.Comparator;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -73,7 +71,7 @@ class LinkedListTest
 	{
 		final ListNode<String> newNode = new ListNode<>(String::compareTo);
 		newNode.data = "New Node";
-		list.insert(newNode);
+		list.insertHead(newNode);
 
 		assertEquals(6, list.size());
 		assertNotNull(list.search("New Node"));
