@@ -109,7 +109,8 @@ public class LinkedList<T> implements Iterable<ListNode<T>>
 			_count--;
 		}
 
-
+		// remove links to list for the now removed node
+		temp.next = null;
 		return temp;
 	}
 
@@ -153,7 +154,7 @@ public class LinkedList<T> implements Iterable<ListNode<T>>
 	 * last node in the chain's .next to the head.
 	 * @param newNode
 	 */
-	private void mergeToHead(ListNode<T> newNode)
+	public void mergeToHead(ListNode<T> newNode)
 	{	ListNode<T> node = newNode;
 		ListNode<T> temp = _head;
 
@@ -183,7 +184,7 @@ public class LinkedList<T> implements Iterable<ListNode<T>>
 		}
 	}
 
-	private void mergeToTail(ListNode<T> newNode)
+	public void mergeToTail(ListNode<T> newNode)
 	{
 		ListNode<T> node = newNode;
 
@@ -271,6 +272,17 @@ public class LinkedList<T> implements Iterable<ListNode<T>>
 			public ListNode<T> next()
 			{
 				return get(_cursor++);
+			}
+
+			@Override
+			public void remove()
+			{
+				if(_cursor < 0)
+				{
+					throw new IndexOutOfBoundsException("Cannot remove node from empty list");
+				}
+
+				LinkedList.this.remove(--_cursor);
 			}
 		};
 

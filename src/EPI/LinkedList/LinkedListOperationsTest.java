@@ -11,6 +11,8 @@ import org.junit.jupiter.api.Test;
 class LinkedListOperationsTest
 {
 	private LinkedList<Integer> list;
+	private ListNode<Integer> _aHead;
+	private ListNode<Integer> _bHead;
 
 	@BeforeEach
 	void setUp()
@@ -26,14 +28,29 @@ class LinkedListOperationsTest
 	@Test
 	void merge()
 	{
+		// ARRANGE
+		LinkedList<Integer> b = getEvenIntegerList();
+
+		// ACT
+		LinkedList<Integer> mergedList = LinkedListOperations.merge(list, b, Integer::compareTo);
+
+		// ASSERT
+		assertMergeResults(mergedList);
+	}
+
+	private LinkedList<Integer> getEvenIntegerList()
+	{
 		LinkedList<Integer> b = new LinkedList<>(Integer::compareTo);
 		b.add(10);
 		b.add(8);
 		b.add(6);
 		b.add(4);
 		b.add(2);
+		return b;
+	}
 
-		LinkedList<Integer> mergedList = LinkedListOperations.merge(list, b, Integer::compareTo);
+	private void assertMergeResults(LinkedList<Integer> mergedList)
+	{
 		assertEquals(10, mergedList.size());
 
 		for(ListNode<Integer> node : mergedList)
