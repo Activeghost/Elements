@@ -136,7 +136,7 @@ public class LinkedListOperations
 				prev = current;
 			}
 
-			if (i == end)
+			if (i + 1 == end)
 			{
 				post = current.next;
 			}
