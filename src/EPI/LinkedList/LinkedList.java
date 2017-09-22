@@ -36,8 +36,18 @@ public class LinkedList<T> implements Iterable<ListNode<T>>
 			throw new IndexOutOfBoundsException("Index is greater than the size of the list");
 		}
 
+		// short circuit the two ends of the list.
+		if(index == 0)
+		{
+			return _head;
+		}
+		else if(index == size())
+		{
+			return _tail;
+		}
+
 		ListNode<T> node = _head;
-		for(int i = 0; i < index; i++)
+		for(int i = 1; i < index - 1; i++)
 		{
 			node = node.next;
 		}
@@ -72,7 +82,19 @@ public class LinkedList<T> implements Iterable<ListNode<T>>
 	{
 		ListNode<T> temp = null;
 
-		// find the node just before the node we want to remove, and remove it from the list.
+		// special case for the _head of the list
+		if(node.equals(_head))
+		{
+			temp = _head;
+			_head = temp.next;
+			temp.next = null;
+
+			_count--;
+			return temp;
+		}
+
+		// otherwise find the node just before the node we want to remove
+		// and remove it from the list.
 		ListNode<T> prevNode = search(node, (a, b) ->
 		{
 			if(a == null |
@@ -92,21 +114,10 @@ public class LinkedList<T> implements Iterable<ListNode<T>>
 									.orElse(null);
 			_count--;
 
-			if(temp.equals(_head))
-			{
-				_head = prevNode;
-			}
-
 			if(temp.equals(_tail))
 			{
 				_tail = prevNode;
 			}
-		}
-		else if(_head.equals(node))
-		{
-			temp = _head;
-			_head = node.next;
-			_count--;
 		}
 
 		// remove links to list for the now removed node
@@ -155,19 +166,21 @@ public class LinkedList<T> implements Iterable<ListNode<T>>
 	 * @param newNode
 	 */
 	public void mergeToHead(ListNode<T> newNode)
-	{	ListNode<T> node = newNode;
+	{
+		ListNode<T> current = newNode;
+		ListNode<T> prev = null;
 		ListNode<T> temp = _head;
 
-		Iterator<ListNode<T>> it = iterator();
-		_head = node;
+		_head = current;
 
-		while(it.hasNext())
+		while(current != null)
 		{
-			node = it.next();
+			prev = current;
+			current = current.next;
 			_count++;
 		}
 
-		node.next = temp;
+		prev.next = temp;
 	}
 
 	/**

@@ -17,6 +17,12 @@ public class ListNode<T> implements Comparable<T>
 		_comparator = comparator;
 	}
 
+	public ListNode(T theData, Comparator<T> comparator)
+	{
+		data = theData;
+		_comparator = comparator;
+	}
+
 	@Override
 	public int compareTo(T data)
 	{
