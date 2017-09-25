@@ -1,6 +1,7 @@
 package EPI.LinkedList;
 
 import java.util.Comparator;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -31,45 +32,112 @@ class LinkedListOperationsTest
 	void reverseListInBatches()
 	{
 		_aHead = getSkipList(1, 1);
-		LinkedListOperations.reverseList(_aHead, 10, Integer::compareTo);
+		_aHead = LinkedListOperations.reverseListInBatches(_aHead, 10, Integer::compareTo);
 
-		ListNode<Integer> node = _aHead;
-		while(node != null)
-		{
-			if (node.next != null)
-			{
-				assertTrue(node.data > node.next.data);
-			}
-
-			node = node.next;
-		}
+		assertBatchReversal(10, 20, _aHead);
 	}
 
 	@Test
 	void reverseList()
 	{
 		_aHead = getSkipList(1, 1);
-		LinkedListOperations.reverseList(_aHead, Integer::compareTo);
+		_aHead = LinkedListOperations.reverseListInBatches(_aHead, Integer::compareTo);
 
-		ListNode<Integer> node = _aHead;
+		assertListReversal(_aHead);
+	}
+
+	@Test
+	void reverseSublist_reverses_entire_list()
+	{
+		// Arrange
+		_aHead = getSkipList(1, 1);
+
+		final int start = 1;
+		final int end = 20;
+
+		// ACT
+		ListNode<Integer> head = _aHead;
+		LinkedListOperations.reverseSublist(head, start, end, Integer::compareTo);
+
+		// ASSERT
+		assertListReversal(head);
+	}
+
+	@Test
+	void reverseSublist_reverses_partial_list()
+	{
+		reverseSubListTest(1, 2);
+		reverseSubListTest(1, 20);
+		reverseSubListTest(10, 20);
+		reverseSubListTest(19, 20);
+	}
+
+	private void reverseSubListTest(int start, int end)
+	{
+		_aHead = getSkipList(1, 1);
+
+		// ACT
+		ListNode<Integer> head = _aHead;
+		LinkedListOperations.reverseSublist(head, start, end, Integer::compareTo);
+
+		// ASSERT
+		assertSubListReversal(start, end, head);
+	}
+
+	private void assertBatchReversal(int batchSize, int listSize, ListNode<Integer> node)
+	{
+		int size = 0;
+		int i = batchSize - 1;
+
 		while(node != null)
 		{
-			if (node.next != null)
+			if (i == 0)
+			{
+				assertTrue(node.data < Optional
+						.ofNullable(node.next)
+						.map(theNode -> theNode.data)
+						.orElse(Integer.MAX_VALUE));
+				i = batchSize;
+			}
+			else
 			{
 				assertTrue(node.data > node.next.data);
 			}
 
 			node = node.next;
+			i--;
+			size++;
+		}
+
+		assertEquals(listSize, size);
+	}
+
+	private void assertSubListReversal(int start, int end, ListNode<Integer> node)
+	{
+		int i = 1;
+
+		while(node != null && i <= end)
+		{
+			if(node.next != null)
+			{
+				if (i < start)
+				{
+					assertTrue(node.data < node.next.data);
+				}
+				else if (i >= start && i <= end)
+				{
+					assertTrue(node.data > node.next.data);
+				}
+			}
+
+			node = node.next;
+			i++;
 		}
 	}
 
-	@Test
-	void reverseSublist()
+	private void assertListReversal(ListNode<Integer> head)
 	{
-		_aHead = getSkipList(1, 1);
-		LinkedListOperations.reverseSublist(_aHead, 1, 20, Integer::compareTo);
-
-		ListNode<Integer> node = _aHead;
+		ListNode<Integer> node = head;
 		while(node != null)
 		{
 			if (node.next != null)

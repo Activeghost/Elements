@@ -117,87 +117,85 @@ public class LinkedListOperations
 		return merged.next;
 	}
 
-	public static <T> void reverseSublist(ListNode<T> head,
+	public static <T> ListNode<T> reverseSublist(ListNode<T> head,
 			int start,
 			int end,
 			Comparator<T> comparator)
 	{
-		ListNode<T> current = new ListNode<T>(comparator);
-		current.next = head;
-
-		ListNode<T> prev = null;
-		ListNode<T> post = null;
-
-		// find the nodes just prior and post the start and end nodes
-		for (int i = 0; i < end; i++)
+		if(start == end)
 		{
-			if (i + 1 == start)
-			{
-				prev = current;
-			}
-
-			if (i + 1 == end)
-			{
-				post = current.next;
-			}
-
-			current = current.next;
+			return head;
 		}
 
-		ListNode<T> next;
-		current = prev.next;
+		ListNode<T> dummy = new ListNode<T>(comparator);
+		dummy.next = head;
 
-		for (int j = start; j < end; j++)
+		ListNode<T> subListHead = dummy;
+		int k = 1;
+
+		// find the start of the sublist
+		while(k++ < start)
 		{
-			// save off next
-			next = current.next;
-
-			// set next pointer to end and move the end
-			current.next = post;
-			post = current;
-
-			// move current pointer to next
-			current = next;
+			subListHead = subListHead.next;
 		}
 
-		prev.next = post;
+		ListNode<T> subListIter = subListHead.next;
+
+		while(start++ < end)
+		{
+			// save off the next link
+			ListNode<T> temp = subListIter.next;
+
+			// save temp's next link into our sublist iterator
+			subListIter.next = temp.next;
+
+			// swap the sublist head.next with temp
+			temp.next = subListHead.next;
+			subListHead.next = temp;
+		}
+
+		return dummy.next;
 	}
 
-	public static <T> void reverseList(ListNode<T> head, Comparator<T> comparator)
+	public static <T> ListNode<T> reverseListInBatches(ListNode<T> head, Comparator<T> comparator)
 	{
-		ListNode<T> current = new ListNode<T>(comparator);
-		current.next = head;
+		ListNode<T> dummy = new ListNode<T>(comparator);
+		dummy.next = head;
 
-		int i = 0;
-
+		ListNode<T> current = dummy.next;
+		ListNode<T> prev = null;
 		ListNode<T> next;
 
 		while (current != null)
 		{
-			// save off next
+			// save off the next link
 			next = current.next;
 
-			// set the current as the last node.
-			current.next = null;
+			// set the prior node as the new next (reversing the link)
+			current.next = prev;
 
-			// move current pointer to next
+			// move the current node to the prior node cursor
+			prev = current;
+
+			// move the current cursor to the next node
 			current = next;
 		}
+
+		return dummy.next;
 	}
 
 	/**
 	 * Reverse the list in batches of size k, leave any remainder as is
+	 * @param <T>
 	 * @param head
 	 * @param batch
 	 * @param comparator
-	 * @param <T>
 	 */
-	public static <T> void reverseList(ListNode<T> head, int batch, Comparator<T> comparator)
+	public static <T> ListNode<T> reverseListInBatches(ListNode<T> head, int batch, Comparator<T> comparator)
 	{
-		ListNode<T> current = new ListNode<T>(comparator);
-		current.next = head;
+		ListNode<T> current = head;
 
-		/// find the size, remove our dummy node from the count (start from 0 and not 1);
+		/// find the size
 		int size = 0;
 		while (current != null)
 		{
@@ -207,8 +205,12 @@ public class LinkedListOperations
 
 		while (size > size % batch)
 		{
-			reverseSublist(head, size - batch, size, comparator);
+			// start is inclusive, thus a batch of 5 would result in say start: 6 and end: 10
+			// (five individual items)
+			head = reverseSublist(head, size - batch + 1, size, comparator);
 			size -= batch;
 		}
+
+		return head;
 	}
 }
