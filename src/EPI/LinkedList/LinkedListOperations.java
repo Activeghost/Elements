@@ -1,7 +1,11 @@
 package EPI.LinkedList;
 
 import java.util.Comparator;
+import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Created by clester on 9/15/2017.
@@ -212,5 +216,23 @@ public class LinkedListOperations
 		}
 
 		return head;
+	}
+
+	public static <T> List<ListNode<T>> getFirstCycle(ListNode<T> head)
+	{
+		ListNode<T> iter = head;
+		Map<ListNode<T>, Integer> hashTable = new Hashtable<>();
+		while (iter != null)
+		{
+			hashTable.merge(iter, 1, (a,b) -> a + b);
+			iter = iter.next;
+		}
+
+		return hashTable
+				.entrySet()
+				.stream()
+				.filter(entry -> entry.getValue() > 1)
+				.map(entry -> entry.getKey())
+				.collect(Collectors.toList());
 	}
 }
