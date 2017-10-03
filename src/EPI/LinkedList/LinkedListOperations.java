@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Created by clester on 9/15/2017.
+ * Linked list operations class
  */
 public class LinkedListOperations
 {
@@ -218,21 +218,202 @@ public class LinkedListOperations
 		return head;
 	}
 
-	public static <T> List<ListNode<T>> getFirstCycle(ListNode<T> head)
+	public static <T> ListNode<T> getFirstCycle(ListNode<T> head)
 	{
 		ListNode<T> iter = head;
 		Map<ListNode<T>, Integer> hashTable = new Hashtable<>();
 		while (iter != null)
 		{
+			if(hashTable.containsKey(iter))
+			{
+				return iter;
+			}
+
 			hashTable.merge(iter, 1, (a,b) -> a + b);
 			iter = iter.next;
 		}
 
-		return hashTable
-				.entrySet()
-				.stream()
-				.filter(entry -> entry.getValue() > 1)
-				.map(entry -> entry.getKey())
-				.collect(Collectors.toList());
+		return null;
+	}
+
+	/**
+	 * Book solution #1, using fast and slow iterators. The cycle is found when the two equal each other.
+	 * We then calculate the length of the cycle, and set one pointer to the head and another to the
+	 * length, and advance each until they are equal ... where a is the start and b the end of the cycle.
+	 * @param head
+	 * @param <T>
+	 * @return
+	 */
+	public static <T> ListNode<T> getFirstCycleEx(ListNode<T> head)
+	{
+		ListNode<T> fastIter = head;
+		ListNode<T> slowIter = head;
+
+		// slow iterator advances node by node.
+		// fast iterator advances by two nodes each time
+		while (fastIter != null && fastIter.next != null)
+		{
+			slowIter = slowIter.next;
+			fastIter = fastIter.next.next;
+
+			// if the slow iterator is equal to the fast iterator
+			// we've found a cycle.
+			if (slowIter.equals(fastIter))
+			{
+				// found a cycle, calculate the length
+				int cycleLen = 0;
+				do
+				{
+					++cycleLen;
+					fastIter = fastIter.next;
+				}
+				while (slowIter != fastIter);
+
+				// find the start of the cycle
+				ListNode<T> cycleLenIter = head;
+				while (cycleLen-- > 0)
+				{
+					cycleLenIter = cycleLenIter.next;
+				}
+
+				// advance both pointers until they are equal
+				// since one is set to the head, and the other to the cycle length
+				// this is guaranteed to find the cycle start.
+				ListNode<T> iter = head;
+				while (iter != cycleLenIter)
+				{
+					iter = iter.next;
+					cycleLenIter = cycleLenIter.next;
+				}
+
+				return iter;
+			}
+
+		}
+
+		return null;
+	}
+
+	/**
+	 * Use http://en.wikipedia.org/wiki/Cycle_detection#Tortoise_and_hare algorithm
+	 * without calculating the cycle size, due to the following
+	 * Since tortoise travels x + y times before meeting
+	 * And the hare travels (x + y + z) + some extra y before meeting
+	 *
+	 * given that hare travels twice as fast, 2(x + y) = (x + y + z) + y
+	 * which reduces to x = z. Where z is the remaining steps in the cycle.
+	 *
+	 * There fore if we travel z steps from the head, both are guaranteed to meet
+	 * at the start of the cycle.
+	 * @param head
+	 * @param <T>
+	 * @return
+	 */
+	public static <T> ListNode<T> getFirstCycleEx2(ListNode<T> head)
+	{
+		ListNode<T> fastIter = head;
+		ListNode<T> slowIter = head;
+
+		// slow iterator advances node by node.
+		// fast iterator advances by two nodes each time
+		while (fastIter != null && fastIter.next != null)
+		{
+			slowIter = slowIter.next;
+			fastIter = fastIter.next.next;
+
+			// if the slow iterator is equal to the fast iterator
+			// we've found a cycle.
+			if (slowIter.equals(fastIter))
+			{
+				slowIter = head;
+				while (slowIter != fastIter)
+				{
+					slowIter = slowIter.next;
+					fastIter = fastIter.next;
+				}
+
+				return slowIter;
+			}
+
+		}
+
+		return null;
+	}
+
+	/**
+	 * Find and return the node where a list converges with another list
+	 * this assumes there are no cycles in the list
+	 * @param <T> The type of content in the nodes
+	 * @param a the first list
+	 * @param b the second list
+	 * @return
+	 */
+	public static <T> ListNode<T> getConvergence(ListNode<T> a, ListNode<T> b)
+	{
+		int aCount = 0;
+		int bCount = 0;
+
+		ListNode<T> aIterator = a;
+		ListNode<T> bIterator = b;
+
+		// find the length of both lists
+		aCount = getListSize(aCount, aIterator);
+
+		// find the length of both lists
+		bCount = getListSize(bCount, bIterator);
+
+		int delta;
+
+		// advance the long list a - b nodes.
+		if(aCount > bCount)
+		{
+			aIterator = a;
+			delta = aCount - bCount;
+			aIterator = getListNodeAtIndex(aIterator, delta + 1);
+		}
+		else if(bCount > aCount)
+		{
+			bIterator = b;
+			delta = bCount - aCount;
+			bIterator = getListNodeAtIndex(bIterator, delta + 1);
+		}
+
+		// iterate both at the same frequency
+		while(aIterator != bIterator && aIterator != null && bIterator != null)
+		{
+			aIterator = aIterator.next;
+			bIterator = bIterator.next;
+		}
+
+		// tail should be the same if these converge.
+		if(aIterator == bIterator)
+		{
+			return aIterator;
+		}
+		else
+		{
+			return null;
+		}
+	}
+
+	public static <T> ListNode<T> getListNodeAtIndex(ListNode<T> listNode, int index)
+	{
+		ListNode<T> iterator = listNode;
+		while(index-- > 1)
+		{
+			iterator = iterator.next;
+		}
+
+		return iterator;
+	}
+
+	private static <T> int getListSize(int bCount, ListNode<T> bIterator)
+	{
+		while(bIterator != null)
+		{
+			bIterator = bIterator.next;
+			bCount++;
+		}
+		return bCount;
 	}
 }

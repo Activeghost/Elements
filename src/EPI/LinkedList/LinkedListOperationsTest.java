@@ -1,7 +1,9 @@
 package EPI.LinkedList;
 
 import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -26,6 +28,99 @@ class LinkedListOperationsTest
 		list.add(5);
 		list.add(3);
 		list.add(1);
+	}
+
+	@Test
+	void getListNodeAtIndex()
+	{
+		ListNode<Integer> a = getSkipList(1, 1);
+		assertEquals((int)20,
+					 (int)LinkedListOperations.getListNodeAtIndex(a, 20).data);
+	}
+
+	@Test
+	void getConvergence()
+	{
+		for(int i = 0; i < 20; i++)
+		{
+			ListNode<Integer> a = getSkipList(1, 1);
+			ListNode<Integer> b = getSkipList(1, 1);
+
+			ListNode<Integer> listNodeAtIndex = LinkedListOperations.getListNodeAtIndex(a, i);
+			listNodeAtIndex.next = b;
+
+			ListNode<Integer> convergenceNode = LinkedListOperations.getConvergence(a, b);
+			assertEquals(b, convergenceNode);
+		}
+	}
+
+	@Test
+	void getFirstCycleEx()
+	{
+		_aHead = getSkipList(1, 1);
+		ListNode<Integer> cycleIndex = introduceCycle(_aHead);
+		ListNode<Integer> firstCycle = LinkedListOperations.getFirstCycleEx(_aHead);
+		assertEquals(cycleIndex, firstCycle);
+	}
+
+	@Test
+	void getFirstCycleEx2()
+	{
+		for(int i = 0; i < 100; i++)
+		{
+			ListNode<Integer> head = getSkipList(1, 1);
+			ListNode<Integer> cycleIndex = introduceCycle(head);
+			ListNode<Integer> firstCycle = LinkedListOperations.getFirstCycleEx2(head);
+			assertEquals(cycleIndex, firstCycle);
+		}
+	}
+
+	@Test
+	void reverseSublist()
+	{
+	}
+
+	@Test
+	void getFirstCycle()
+	{
+		_aHead = getSkipList(1, 1);
+		ListNode<Integer> cycleIndex = introduceCycle(_aHead);
+		ListNode<Integer> firstCycle = LinkedListOperations.getFirstCycle(_aHead);
+
+		assertEquals(cycleIndex, firstCycle);
+	}
+
+	private ListNode<Integer> introduceCycle(ListNode<Integer> listIter)
+	{
+		ListNode<Integer> cycleFromNode = null;
+		ListNode<Integer> cycleToNode = null;
+
+		Random rand = new Random();
+		int first = rand.nextInt(20);
+		int second = rand.nextInt(20);
+
+		int cycleFrom = first < second ? second: first;
+		int cycleTo = first > second ? second: first;
+		int i = 1;
+
+		while(listIter != null)
+		{
+			listIter = listIter.next;
+			if(cycleTo == i)
+			{
+				cycleToNode = listIter;
+			}
+
+			if(cycleFrom == i)
+			{
+				cycleFromNode = listIter;
+			}
+
+			i++;
+		}
+
+		cycleFromNode.next = cycleToNode;
+		return cycleToNode;
 	}
 
 	@Test
