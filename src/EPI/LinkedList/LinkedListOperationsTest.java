@@ -31,6 +31,79 @@ class LinkedListOperationsTest
 	}
 
 	@Test
+	void deleteSuccessorNode()
+	{
+		for(int i = 1; i < 20; i++)
+		{
+			ListNode<Integer> a = getSkipList(1, 1);
+			ListNode<Integer> listNodeAtIndex = LinkedListOperations.getListNodeAtIndex(a, i + 1);
+			ListNode<Integer> predecessor =  LinkedListOperations.getListNodeAtIndex(a, i);
+			ListNode<Integer> deletedNode = LinkedListOperations.deleteSuccessorNode(predecessor);
+
+			assertEquals(listNodeAtIndex, deletedNode);
+		}
+	}
+
+	@Test
+	void deleteNodeAtIndex()
+	{
+		for(int i = 1; i < 20; i++)
+		{
+			ListNode<Integer> a = getSkipList(1, 1);
+			ListNode<Integer> listNodeAtIndex = LinkedListOperations.getListNodeAtIndex(a, i);
+			ListNode<Integer> deletedNode = LinkedListOperations.deleteNodeAtIndex(a, i);
+
+			assertEquals(listNodeAtIndex, deletedNode);
+		}
+	}
+
+	@Test
+	void deleteKthLastNode()
+	{
+		for(int i = 1; i < 20; i++)
+		{
+			ListNode<Integer> a = getSkipList(1, 1);
+			ListNode<Integer> listNodeAtIndex = LinkedListOperations.getListNodeAtIndex(a, 20 - i);
+			ListNode<Integer> deletedNode = LinkedListOperations.deleteKthLastNode(a, i);
+
+			assertEquals(listNodeAtIndex, deletedNode);
+		}
+	}
+
+	@Test
+	void getConvergenceEx()
+	{
+		for(int i = 0; i < 20; i++)
+		{
+			ListNode<Integer> a = getSkipList(1, 1);
+			ListNode<Integer> b = getSkipList(1, 1);
+
+			// insert a cycle every other time
+			boolean hasCycle = i % 2 == 0;
+			ListNode<Integer> cycleNode = null;
+
+			if(hasCycle)
+			{
+				cycleNode = introduceCycle(b);
+			}
+
+			ListNode<Integer> listNodeAtIndex = LinkedListOperations.getListNodeAtIndex(a, i);
+			listNodeAtIndex.next = b;
+
+			ListNode<Integer> convergenceNode = LinkedListOperations.getConvergenceEx(a, b);
+
+			if(hasCycle)
+			{
+				assertEquals(cycleNode.next, convergenceNode);
+			}
+			else
+			{
+				assertEquals(b, convergenceNode);
+			}
+		}
+	}
+
+	@Test
 	void getListNodeAtIndex()
 	{
 		ListNode<Integer> a = getSkipList(1, 1);
@@ -92,35 +165,17 @@ class LinkedListOperationsTest
 
 	private ListNode<Integer> introduceCycle(ListNode<Integer> listIter)
 	{
-		ListNode<Integer> cycleFromNode = null;
-		ListNode<Integer> cycleToNode = null;
-
 		Random rand = new Random();
 		int first = rand.nextInt(20);
 		int second = rand.nextInt(20);
 
 		int cycleFrom = first < second ? second: first;
 		int cycleTo = first > second ? second: first;
-		int i = 1;
-
-		while(listIter != null)
-		{
-			listIter = listIter.next;
-			if(cycleTo == i)
-			{
-				cycleToNode = listIter;
-			}
-
-			if(cycleFrom == i)
-			{
-				cycleFromNode = listIter;
-			}
-
-			i++;
-		}
+		ListNode<Integer> cycleFromNode = LinkedListOperations.getListNodeAtIndex(listIter, cycleFrom);
+		ListNode<Integer> cycleToNode = LinkedListOperations.getListNodeAtIndex(listIter, cycleTo);
 
 		cycleFromNode.next = cycleToNode;
-		return cycleToNode;
+		return cycleFromNode;
 	}
 
 	@Test

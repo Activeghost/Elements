@@ -5,6 +5,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -406,6 +407,82 @@ public class LinkedListOperations
 
 		return iterator;
 	}
+
+	public static <T> ListNode<T> getConvergenceEx(ListNode<T> a, ListNode<T> b)
+	{
+		ListNode<T> aCycle = getFirstCycle(a);
+		ListNode<T> bCycle = getFirstCycle(b);
+
+		if(aCycle == bCycle
+		   && aCycle != null
+		   && bCycle != null)
+		{
+			return aCycle;
+		}
+
+		// if one list has a cycle and the other does not, it doesn't converge.
+		else if(aCycle != bCycle)
+		{
+			return null;
+		}
+		else
+		{
+			return getConvergence(a, b);
+		}
+	}
+
+	public static <T> ListNode<T> deleteSuccessorNode(ListNode<T> node)
+	{
+		ListNode<T> nodeToDelete = node.next;
+		if(nodeToDelete == null)
+		{
+			return null;
+		}
+
+		Optional<ListNode<T>> newSuccessorNode = Optional.ofNullable(node.next.next);
+
+		node.data = newSuccessorNode.map(t -> t.data).orElse(null);
+		node.next = newSuccessorNode.map(t -> t.next).orElse(null);
+
+		return nodeToDelete;
+	}
+
+	public static <T> ListNode<T> deleteNodeAtIndex(ListNode<T> head, int index)
+	{
+		ListNode<T> nodeToDelete = null;
+
+		// handle deleting the head
+		if(index == 1)
+		{
+			nodeToDelete = head;
+			head = head.next;
+			return nodeToDelete;
+		}
+
+		nodeToDelete = getListNodeAtIndex(head, index - 1);
+		return deleteSuccessorNode(nodeToDelete);
+	}
+
+	/**
+	 * Uses a window to calculate the kth last node and delete it.
+	 * @param head
+	 * @param k
+	 * @param <T>
+	 * @return
+	 */
+	public static <T> ListNode<T> deleteKthLastNode(ListNode<T> head, int k)
+	{
+		ListNode<T> second = head;
+		ListNode<T> first = getListNodeAtIndex(head, k);
+		while(first != null)
+		{
+			second = second.next;
+			first = first.next;
+		}
+
+		return deleteSuccessorNode(second);
+	}
+
 
 	private static <T> int getListSize(int bCount, ListNode<T> bIterator)
 	{
