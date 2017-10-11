@@ -3,16 +3,52 @@ package EPI.LinkedList;
 import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Linked list operations class
  */
 public class LinkedListOperations
 {
+	/**
+	 * Rotate the list by k rotations
+	 * @param head the head
+	 * @param k the number of rotations to perform
+	 * @param <T>
+	 */
+	public static <T> ListNode<T> rotate(ListNode<T> head,
+			Comparator<T> comparator,
+			int k)
+	{
+		if(k <= 0)
+		{
+			return head;
+		}
+
+		ListNode<T> dummy = new ListNode<T>(comparator);
+		dummy.next = head;
+
+		ListNode<T> kthLastNode = getKthLastNode(head, k - 1);
+		ListNode<T> tail = getTail(head);
+
+		tail.next = head;
+		dummy.next = kthLastNode.next;
+		kthLastNode.next = null;
+
+		return dummy.next;
+	}
+
+	private static <T> ListNode<T> getTail(ListNode<T> node)
+	{
+		while(node.next != null)
+		{
+			node = node.next;
+		}
+
+		return node;
+	}
+
 	public static <T> LinkedList<T> merge(LinkedList<T> a,
 			LinkedList<T> b,
 			Comparator<T> comparator)
@@ -358,10 +394,10 @@ public class LinkedListOperations
 		ListNode<T> bIterator = b;
 
 		// find the length of both lists
-		aCount = getListSize(aCount, aIterator);
+		aCount = getListSize(aIterator);
 
 		// find the length of both lists
-		bCount = getListSize(bCount, bIterator);
+		bCount = getListSize(bIterator);
 
 		int delta;
 
@@ -472,6 +508,17 @@ public class LinkedListOperations
 	 */
 	public static <T> ListNode<T> deleteKthLastNode(ListNode<T> head, int k)
 	{
+		ListNode<T> second = getKthLastNode(head, k -1);
+		return deleteSuccessorNode(second);
+	}
+
+	public static <T> ListNode<T> getKthLastNode(ListNode<T> head, int k)
+	{
+		if(k <= 0)
+		{
+			return head;
+		}
+
 		ListNode<T> second = head;
 		ListNode<T> first = getListNodeAtIndex(head, k);
 		while(first != null)
@@ -480,17 +527,33 @@ public class LinkedListOperations
 			first = first.next;
 		}
 
-		return deleteSuccessorNode(second);
+		return second.next;
+	}
+
+	public static <T> void removeDuplicates(ListNode<T> head)
+	{
+		ListNode<T> iterator = head;
+		while(iterator.next != null)
+		{
+			if(iterator.compareTo(iterator.next.data) == 0)
+			{
+				deleteSuccessorNode(iterator);
+			}
+
+			iterator = iterator.next;
+		}
 	}
 
 
-	private static <T> int getListSize(int bCount, ListNode<T> bIterator)
+	public static <T> int getListSize(ListNode<T> bIterator)
 	{
+		int count = 0;
 		while(bIterator != null)
 		{
 			bIterator = bIterator.next;
-			bCount++;
+			count++;
 		}
-		return bCount;
+
+		return count;
 	}
 }
