@@ -29,6 +29,25 @@ class LinkedListOperationsTest
 	}
 
 	@Test
+	void getFirstCycle()
+	{
+	}
+
+	@Test
+	void getConvergence()
+	{
+		ListNode<Integer> a = getSkipList(1, 1);
+		ListNode<Integer> b = getSkipList(1, 10);
+		b.next.next = a;
+
+		ListNode<Integer> convergentNode = LinkedListOperations.getConvergence(
+				a,
+				b);
+
+		assertEquals(a, convergentNode);
+	}
+
+	@Test
 	void reverseListInBatches()
 	{
 		_aHead = getSkipList(1, 1);

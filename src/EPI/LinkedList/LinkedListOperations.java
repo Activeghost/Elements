@@ -235,4 +235,96 @@ public class LinkedListOperations
 				.map(entry -> entry.getKey())
 				.collect(Collectors.toList());
 	}
+
+	public static <T> ListNode<T> getConvergence(ListNode<T> listA, ListNode<T> listB)
+	{
+		// count both lists
+		ListNode<T> aIterator = listA;
+		ListNode<T> bIterator = listB;
+
+		int aSize = getListSize(listA);
+		int bSize = getListSize(listB);
+		int delta = 0;
+
+		if(aSize > bSize)
+		{
+			delta = aSize - bSize;
+			aIterator = getListNodeAtIndex(
+					delta,
+					listA);
+
+		}
+		else
+		{
+			delta = bSize - aSize;
+			bIterator = getListNodeAtIndex(
+					delta,
+					listB);
+		}
+
+		while(aIterator != bIterator
+				&& aIterator != null
+				&& bIterator != null)
+		{
+			aIterator = aIterator.next;
+			bIterator = bIterator.next;
+		}
+
+		return aIterator;
+	}
+
+	public static <T> void evenOddMerge(ListNode<T> head)
+	{
+		ListNode<T> p1 = head;
+		ListNode<T> p2 = head.next;
+		ListNode<T> temp = null;
+
+		int nodeIndex = 0;
+
+		while(p2 != null)
+		{
+			if(nodeIndex % 2 == 0)
+			{
+				// increment P2 marker by 1
+				p2 = p2.next;
+			}
+			else
+			{
+				// swap the odd node (p1.next) with the even node (p2).
+				temp = p1.next;
+				p1.next = p2;
+
+				temp.next = p2.next.next;
+				p2.next = temp;
+
+				// increment P1 by 1 and P2 by 1
+				p1 = p2;
+				p2 = p2.next;
+			}
+
+			nodeIndex++;
+		}
+	}
+
+	private static <T> ListNode<T> getListNodeAtIndex(
+			int index,
+			ListNode<T> head)
+	{
+		while(index-- > 0)
+		{
+			head = head.next;
+		}
+		return head;
+	}
+
+	private static <T> int getListSize(ListNode<T> aIterator)
+	{
+		int aSize = 0;
+		while(aIterator != null)
+		{
+			aIterator = aIterator.next;
+			aSize++;
+		}
+		return aSize;
+	}
 }
