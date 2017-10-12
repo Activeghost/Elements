@@ -1,7 +1,9 @@
 package EPI.LinkedList;
 
 import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -9,7 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
- * Created by clester on 9/18/2017.
+ * Linked list operations test class
  */
 class LinkedListOperationsTest
 {
@@ -29,22 +31,151 @@ class LinkedListOperationsTest
 	}
 
 	@Test
-	void getFirstCycle()
+	void deleteSuccessorNode()
 	{
+		for(int i = 1; i < 20; i++)
+		{
+			ListNode<Integer> a = getSkipList(1, 1);
+			ListNode<Integer> listNodeAtIndex = LinkedListOperations.getListNodeAtIndex(a, i + 1);
+			ListNode<Integer> predecessor =  LinkedListOperations.getListNodeAtIndex(a, i);
+			ListNode<Integer> deletedNode = LinkedListOperations.deleteSuccessorNode(predecessor);
+
+			assertEquals(listNodeAtIndex, deletedNode);
+		}
+	}
+
+	@Test
+	void deleteNodeAtIndex()
+	{
+		for(int i = 1; i < 20; i++)
+		{
+			ListNode<Integer> a = getSkipList(1, 1);
+			ListNode<Integer> listNodeAtIndex = LinkedListOperations.getListNodeAtIndex(a, i);
+			ListNode<Integer> deletedNode = LinkedListOperations.deleteNodeAtIndex(a, i);
+
+			assertEquals(listNodeAtIndex, deletedNode);
+		}
+	}
+
+	@Test
+	void deleteKthLastNode()
+	{
+		for(int i = 1; i < 20; i++)
+		{
+			ListNode<Integer> a = getSkipList(1, 1);
+			ListNode<Integer> listNodeAtIndex = LinkedListOperations.getListNodeAtIndex(a, 20 - i);
+			ListNode<Integer> deletedNode = LinkedListOperations.deleteKthLastNode(a, i);
+
+			assertEquals(listNodeAtIndex, deletedNode);
+		}
+	}
+
+	@Test
+	void getConvergenceEx()
+	{
+		for(int i = 0; i < 20; i++)
+		{
+			ListNode<Integer> a = getSkipList(1, 1);
+			ListNode<Integer> b = getSkipList(1, 1);
+
+			// insert a cycle every other time
+			boolean hasCycle = i % 2 == 0;
+			ListNode<Integer> cycleNode = null;
+
+			if(hasCycle)
+			{
+				cycleNode = introduceCycle(b);
+			}
+
+			ListNode<Integer> listNodeAtIndex = LinkedListOperations.getListNodeAtIndex(a, i);
+			listNodeAtIndex.next = b;
+
+			ListNode<Integer> convergenceNode = LinkedListOperations.getConvergenceEx(a, b);
+
+			if(hasCycle)
+			{
+				assertEquals(cycleNode.next, convergenceNode);
+			}
+			else
+			{
+				assertEquals(b, convergenceNode);
+			}
+		}
+	}
+
+	@Test
+	void getListNodeAtIndex()
+	{
+		ListNode<Integer> a = getSkipList(1, 1);
+		assertEquals((int)20,
+					 (int)LinkedListOperations.getListNodeAtIndex(a, 20).data);
 	}
 
 	@Test
 	void getConvergence()
 	{
-		ListNode<Integer> a = getSkipList(1, 1);
-		ListNode<Integer> b = getSkipList(1, 10);
-		b.next.next = a;
+		for(int i = 0; i < 20; i++)
+		{
+			ListNode<Integer> a = getSkipList(1, 1);
+			ListNode<Integer> b = getSkipList(1, 1);
 
-		ListNode<Integer> convergentNode = LinkedListOperations.getConvergence(
-				a,
-				b);
+			ListNode<Integer> listNodeAtIndex = LinkedListOperations.getListNodeAtIndex(a, i);
+			listNodeAtIndex.next = b;
 
-		assertEquals(a, convergentNode);
+			ListNode<Integer> convergenceNode = LinkedListOperations.getConvergence(a, b);
+			assertEquals(b, convergenceNode);
+		}
+	}
+
+	@Test
+	void getFirstCycleEx()
+	{
+		_aHead = getSkipList(1, 1);
+		ListNode<Integer> cycleIndex = introduceCycle(_aHead);
+		ListNode<Integer> firstCycle = LinkedListOperations.getFirstCycleEx(_aHead);
+		assertEquals(cycleIndex, firstCycle);
+	}
+
+	@Test
+	void getFirstCycleEx2()
+	{
+		for(int i = 0; i < 100; i++)
+		{
+			ListNode<Integer> head = getSkipList(1, 1);
+			ListNode<Integer> cycleIndex = introduceCycle(head);
+			ListNode<Integer> firstCycle = LinkedListOperations.getFirstCycleEx2(head);
+			assertEquals(cycleIndex, firstCycle);
+		}
+	}
+
+	@Test
+	void reverseSublist()
+	{
+	}
+
+	@Test
+	void getFirstCycle()
+	{
+		_aHead = getSkipList(1, 1);
+		ListNode<Integer> cycleIndex = introduceCycle(_aHead);
+		ListNode<Integer> firstCycle = LinkedListOperations.getFirstCycle(_aHead);
+
+		assertEquals(cycleIndex, firstCycle);
+	}
+
+	private ListNode<Integer> introduceCycle(ListNode<Integer> listIter)
+	{
+		Random rand = new Random();
+		int first = rand.nextInt(20);
+		int second = rand.nextInt(20);
+
+		int cycleFrom = first < second ? second: first;
+		int cycleTo = first > second ? second: first;
+		ListNode<Integer> cycleFromNode = LinkedListOperations.getListNodeAtIndex(listIter, cycleFrom);
+		ListNode<Integer> cycleToNode = LinkedListOperations.getListNodeAtIndex(listIter, cycleTo);
+
+		cycleFromNode.next = cycleToNode;
+		return cycleFromNode;
 	}
 
 	@Test
