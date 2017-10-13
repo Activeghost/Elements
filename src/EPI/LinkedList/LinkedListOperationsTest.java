@@ -35,7 +35,7 @@ class LinkedListOperationsTest
 	void evenOddMerge()
 	{
 		ListNode<Integer> a = getSkipList(0, 1);
-		ListNode<Integer> oddHead = LinkedListOperations.getListNodeAtIndex(a, 1);
+		ListNode<Integer> oddHead = LinkedListOperations.getListNodeAtIndex(a, 2);
 		ListNode<Integer> evenOddMergedList = LinkedListOperations.evenOddMerge(a);
 
 		assertEquals(a, evenOddMergedList);

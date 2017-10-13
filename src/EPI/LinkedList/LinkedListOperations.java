@@ -3,10 +3,8 @@ package EPI.LinkedList;
 import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Linked list operations class
@@ -467,9 +465,7 @@ public class LinkedListOperations
 		}
 
 		Optional<ListNode<T>> newSuccessorNode = Optional.ofNullable(node.next.next);
-
-		node.data = newSuccessorNode.map(t -> t.data).orElse(null);
-		node.next = newSuccessorNode.map(t -> t.next).orElse(null);
+		node.next = newSuccessorNode.orElse(null);
 
 		return nodeToDelete;
 	}
@@ -503,6 +499,13 @@ public class LinkedListOperations
 		return deleteSuccessorNode(second);
 	}
 
+	/**
+	 * Gets the kTh last node from the end of the list
+	 * @param head
+	 * @param k
+	 * @param <T>
+	 * @return
+	 */
 	public static <T> ListNode<T> getKthLastNode(ListNode<T> head, int k)
 	{
 		if(k <= 0)
@@ -535,7 +538,6 @@ public class LinkedListOperations
 		}
 	}
 
-
 	public static <T> int getListSize(ListNode<T> bIterator)
 	{
 		int count = 0;
@@ -556,41 +558,38 @@ public class LinkedListOperations
 	 */
 	public static <T> ListNode<T> evenOddMerge(ListNode<T> head)
 	{
-		ListNode<T> even = head;
-		ListNode<T> odd = moveNode(
+		ListNode<T> dummy = new ListNode<T>((a, b) -> 0);
+		dummy.next = head;
+		head = head.next;
+
+		ListNode<T> odd = moveSuccessorNode(
 				head,
 				null);
 
 		ListNode<T> oddHead = odd;
-		ListNode<T> evenHead = even;
 
 		int nodeIndex = 0;
 
+		// we have two pointers, leave the even list alone as moving all odd
+		// indexes will collate all even to the current head (even).
 		while(head != null)
 		{
 			if(nodeIndex % 2 == 0)
 			{
 				// even node, remove successor and place on temp odd list.
-				odd = moveNode(
+				odd = moveSuccessorNode(
 						head,
 						odd);
 			}
-			else
-			{
-				// odd node, remove successor and place on temp even list.
-				even = moveNode(
-						head,
-						even);
-			}
 
+			head = head.next;
 			nodeIndex++;
 		}
 
-		even.next = oddHead;
-		return evenHead;
+		return dummy.next;
 	}
 
-	private static <T> ListNode<T> moveNode(
+	private static <T> ListNode<T> moveSuccessorNode(
 			ListNode<T> node,
 			ListNode<T> destinationList)
 	{
