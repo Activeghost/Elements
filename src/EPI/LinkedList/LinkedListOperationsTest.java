@@ -1,5 +1,6 @@
 package EPI.LinkedList;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -39,6 +40,35 @@ class LinkedListOperationsTest
 
 		assertEquals(a, evenOddMergedList);
 		assertEquals(oddHead, LinkedListOperations.getListNodeAtIndex(evenOddMergedList, 10));
+	}
+
+	@Test
+	void rotate()
+	{
+		for(int i = 0; i < 100; i++)
+		{
+			ListNode<Integer> a = getSkipList(1, 1);
+			ListNode<Integer> rotatedList = LinkedListOperations.rotate(a, Integer::compareTo, i);
+			int size = LinkedListOperations.getListSize(rotatedList);
+			int index = size > i ? size - i: i % size;
+
+			assertEquals(a.data, LinkedListOperations.getKthLastNode(rotatedList, index).data);
+		}
+	}
+
+	@Test
+	void getListSize()
+	{
+		ListNode<Integer> a = getSkipList(1, 1);
+		assertEquals(20, LinkedListOperations.getListSize(a));
+	}
+
+	@Test
+	void removeDuplicates()
+	{
+		ListNode<Integer> head = getSortedListWithDuplicates(1, 2);
+		LinkedListOperations.removeDuplicates(head);
+		assertEquals(10, 10 );
 	}
 
 	@Test
@@ -389,6 +419,22 @@ class LinkedListOperationsTest
 		for(int i = startValue; i <= 20; i += skipValue)
 		{
 			temp.next = new ListNode<>(i, Integer::compareTo);
+			temp = temp.next;
+		}
+
+		return head.next;
+	}
+
+	private ListNode<Integer> getSortedListWithDuplicates(int startValue, int duplicateSkipIndex)
+	{
+		ListNode<Integer> head = new ListNode<>(Integer::compareTo);
+		ListNode<Integer> temp = head;
+		int data = 0;
+
+		for(int i = startValue; i <= 20; i++)
+		{
+			data = duplicateSkipIndex == i ? i - 1: i;
+			temp.next = new ListNode<>(data, Integer::compareTo);
 			temp = temp.next;
 		}
 
