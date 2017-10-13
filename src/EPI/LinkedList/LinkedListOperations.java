@@ -13,6 +13,44 @@ import java.util.stream.Collectors;
  */
 public class LinkedListOperations
 {
+	/**
+	 * Rotate the list by k rotations
+	 * @param head the head
+	 * @param k the number of rotations to perform
+	 * @param <T>
+	 */
+	public static <T> ListNode<T> rotate(ListNode<T> head,
+			Comparator<T> comparator,
+			int k)
+	{
+		if(k <= 0)
+		{
+			return head;
+		}
+
+		ListNode<T> dummy = new ListNode<T>(comparator);
+		dummy.next = head;
+
+		ListNode<T> kthLastNode = getKthLastNode(head, k - 1);
+		ListNode<T> tail = getTail(head);
+
+		tail.next = head;
+		dummy.next = kthLastNode.next;
+		kthLastNode.next = null;
+
+		return dummy.next;
+	}
+
+	private static <T> ListNode<T> getTail(ListNode<T> node)
+	{
+		while(node.next != null)
+		{
+			node = node.next;
+		}
+
+		return node;
+	}
+
 	public static <T> LinkedList<T> merge(LinkedList<T> a,
 			LinkedList<T> b,
 			Comparator<T> comparator)
@@ -461,6 +499,17 @@ public class LinkedListOperations
 	 */
 	public static <T> ListNode<T> deleteKthLastNode(ListNode<T> head, int k)
 	{
+		ListNode<T> second = getKthLastNode(head, k -1);
+		return deleteSuccessorNode(second);
+	}
+
+	public static <T> ListNode<T> getKthLastNode(ListNode<T> head, int k)
+	{
+		if(k <= 0)
+		{
+			return head;
+		}
+
 		ListNode<T> second = head;
 		ListNode<T> first = getListNodeAtIndex(head, k);
 		while(first != null)
@@ -469,18 +518,34 @@ public class LinkedListOperations
 			first = first.next;
 		}
 
-		return deleteSuccessorNode(second);
+		return second.next;
+	}
+
+	public static <T> void removeDuplicates(ListNode<T> head)
+	{
+		ListNode<T> iterator = head;
+		while(iterator.next != null)
+		{
+			if(iterator.compareTo(iterator.next.data) == 0)
+			{
+				deleteSuccessorNode(iterator);
+			}
+
+			iterator = iterator.next;
+		}
 	}
 
 
-	private static <T> int getListSize(int bCount, ListNode<T> bIterator)
+	public static <T> int getListSize(ListNode<T> bIterator)
 	{
+		int count = 0;
 		while(bIterator != null)
 		{
 			bIterator = bIterator.next;
-			bCount++;
+			count++;
 		}
-		return bCount;
+
+		return count;
 	}
 
 	/**
@@ -546,21 +611,10 @@ public class LinkedListOperations
 			int index,
 			ListNode<T> head)
 	{
-		while(index-- > 0)
+		while (index-- > 0)
 		{
 			head = head.next;
 		}
 		return head;
-	}
-
-	private static <T> int getListSize(ListNode<T> aIterator)
-	{
-		int aSize = 0;
-		while(aIterator != null)
-		{
-			aIterator = aIterator.next;
-			aSize++;
-		}
-		return aSize;
 	}
 }
