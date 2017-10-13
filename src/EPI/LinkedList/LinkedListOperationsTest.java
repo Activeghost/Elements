@@ -31,6 +31,17 @@ class LinkedListOperationsTest
 	}
 
 	@Test
+	void evenOddMerge()
+	{
+		ListNode<Integer> a = getSkipList(0, 1);
+		ListNode<Integer> oddHead = LinkedListOperations.getListNodeAtIndex(a, 1);
+		ListNode<Integer> evenOddMergedList = LinkedListOperations.evenOddMerge(a);
+
+		assertEquals(a, evenOddMergedList);
+		assertEquals(oddHead, LinkedListOperations.getListNodeAtIndex(evenOddMergedList, 10));
+	}
+
+	@Test
 	void deleteSuccessorNode()
 	{
 		for(int i = 1; i < 20; i++)

@@ -351,50 +351,39 @@ public class LinkedListOperations
 	 */
 	public static <T> ListNode<T> getConvergence(ListNode<T> a, ListNode<T> b)
 	{
-		int aCount = 0;
-		int bCount = 0;
-
+		// count both lists
 		ListNode<T> aIterator = a;
 		ListNode<T> bIterator = b;
 
-		// find the length of both lists
-		aCount = getListSize(aCount, aIterator);
+		int aSize = getListSize(a);
+		int bSize = getListSize(b);
+		int delta = 0;
 
-		// find the length of both lists
-		bCount = getListSize(bCount, bIterator);
-
-		int delta;
-
-		// advance the long list a - b nodes.
-		if(aCount > bCount)
+		if(aSize > bSize)
 		{
-			aIterator = a;
-			delta = aCount - bCount;
-			aIterator = getListNodeAtIndex(aIterator, delta + 1);
+			delta = aSize - bSize;
+			aIterator = getListNodeAtIndex(
+					delta,
+					a);
+
 		}
-		else if(bCount > aCount)
+		else
 		{
-			bIterator = b;
-			delta = bCount - aCount;
-			bIterator = getListNodeAtIndex(bIterator, delta + 1);
+			delta = bSize - aSize;
+			bIterator = getListNodeAtIndex(
+					delta,
+					b);
 		}
 
-		// iterate both at the same frequency
-		while(aIterator != bIterator && aIterator != null && bIterator != null)
+		while(aIterator != bIterator
+				&& aIterator != null
+				&& bIterator != null)
 		{
 			aIterator = aIterator.next;
 			bIterator = bIterator.next;
 		}
 
-		// tail should be the same if these converge.
-		if(aIterator == bIterator)
-		{
-			return aIterator;
-		}
-		else
-		{
-			return null;
-		}
+		return aIterator;
 	}
 
 	public static <T> ListNode<T> getListNodeAtIndex(ListNode<T> listNode, int index)
@@ -494,74 +483,63 @@ public class LinkedListOperations
 		return bCount;
 	}
 
-	public static <T> ListNode<T> getConvergence(ListNode<T> listA, ListNode<T> listB)
+	/**
+	 * even odd merge of a list, assumes all lists start at index 0 (even element)
+	 * @param head the head of the list
+	 * @param <T> The type parameter of the list
+	 * @return the merged list
+	 */
+	public static <T> ListNode<T> evenOddMerge(ListNode<T> head)
 	{
-		// count both lists
-		ListNode<T> aIterator = listA;
-		ListNode<T> bIterator = listB;
+		ListNode<T> even = head;
+		ListNode<T> odd = moveNode(
+				head,
+				null);
 
-		int aSize = getListSize(listA);
-		int bSize = getListSize(listB);
-		int delta = 0;
-
-		if(aSize > bSize)
-		{
-			delta = aSize - bSize;
-			aIterator = getListNodeAtIndex(
-					delta,
-					listA);
-
-		}
-		else
-		{
-			delta = bSize - aSize;
-			bIterator = getListNodeAtIndex(
-					delta,
-					listB);
-		}
-
-		while(aIterator != bIterator
-				&& aIterator != null
-				&& bIterator != null)
-		{
-			aIterator = aIterator.next;
-			bIterator = bIterator.next;
-		}
-
-		return aIterator;
-	}
-
-	public static <T> void evenOddMerge(ListNode<T> head)
-	{
-		ListNode<T> p1 = head;
-		ListNode<T> p2 = head.next;
-		ListNode<T> temp = null;
+		ListNode<T> oddHead = odd;
+		ListNode<T> evenHead = even;
 
 		int nodeIndex = 0;
 
-		while(p2 != null)
+		while(head != null)
 		{
 			if(nodeIndex % 2 == 0)
 			{
-				// increment P2 marker by 1
-				p2 = p2.next;
+				// even node, remove successor and place on temp odd list.
+				odd = moveNode(
+						head,
+						odd);
 			}
 			else
 			{
-				// swap the odd node (p1.next) with the even node (p2).
-				temp = p1.next;
-				p1.next = p2;
-
-				temp.next = p2.next.next;
-				p2.next = temp;
-
-				// increment P1 by 1 and P2 by 1
-				p1 = p2;
-				p2 = p2.next;
+				// odd node, remove successor and place on temp even list.
+				even = moveNode(
+						head,
+						even);
 			}
 
 			nodeIndex++;
 		}
+
+		even.next = oddHead;
+		return evenHead;
+	}
+
+	private static <T> ListNode<T> moveNode(
+			ListNode<T> node,
+			ListNode<T> destinationList)
+	{
+		final ListNode<T> tListNode = deleteSuccessorNode(node);
+		tListNode.next = null;
+
+		if(destinationList == null)
+		{
+			return tListNode;
+		}
+
+		destinationList.next = tListNode;
+		destinationList = destinationList.next;
+		return destinationList;
 	}
 
 	private static <T> ListNode<T> getListNodeAtIndex(
