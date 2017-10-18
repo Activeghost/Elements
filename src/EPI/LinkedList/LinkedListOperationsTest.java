@@ -32,6 +32,81 @@ class LinkedListOperationsTest
 	}
 
 	@Test
+	void getKthLastNode()
+	{
+	}
+
+	@Test
+	void pivotList()
+	{
+		// arrange
+		ListNode<Integer> head = new ListNode<>(1, Integer::compareTo);
+		ListNode<Integer> list = head;
+		list.next = new ListNode<>(1, Integer::compareTo);
+		list = list.next;
+
+		list.next = new ListNode<>(3, Integer::compareTo);
+		list = list.next;
+
+		list.next = new ListNode<>(1, Integer::compareTo);
+		list = list.next;
+
+		list.next = new ListNode<>(5, Integer::compareTo);
+		list = list.next;
+
+		list.next = new ListNode<>(3, Integer::compareTo);
+		list = list.next;
+
+		list.next = new ListNode<>(4, Integer::compareTo);
+		list = list.next;
+
+		list.next = new ListNode<>(6, Integer::compareTo);
+		list = list.next;
+
+		list.next = new ListNode<>(4, Integer::compareTo);
+		list = list.next;
+
+		list.next = new ListNode<>(6, Integer::compareTo);
+		list = list.next;
+		list.next = null;
+
+		// act
+		ListNode<Integer> theList = LinkedListOperations.pivotList(head, 4);
+
+		// assert
+		ListNode<Integer> pivot = LinkedListOperations.findFirst(theList, 4);
+
+		boolean beforePivot = true;
+		boolean inPivot = false;
+		boolean afterPivot = false;
+
+		while(theList != null)
+		{
+			int compareResult = pivot.data.compareTo(theList.data);
+
+			if(compareResult == 0)
+			{
+				assertFalse(afterPivot);
+
+				beforePivot = false;
+				inPivot = true;
+			}
+			else if(compareResult > 0)
+			{
+				assertFalse(beforePivot);
+
+				inPivot = false;
+				afterPivot = true;
+			}
+			else if(compareResult < 0)
+			{
+				assertFalse(inPivot);
+				assertFalse(afterPivot);
+			}
+		}
+	}
+
+	@Test
 	void evenOddMerge()
 	{
 		ListNode<Integer> a = getSkipList(0, 1);

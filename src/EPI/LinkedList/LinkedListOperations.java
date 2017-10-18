@@ -13,15 +13,14 @@ public class LinkedListOperations
 {
 	/**
 	 * Rotate the list by k rotations
+	 *
 	 * @param head the head
-	 * @param k the number of rotations to perform
+	 * @param k    the number of rotations to perform
 	 * @param <T>
 	 */
-	public static <T> ListNode<T> rotate(ListNode<T> head,
-			Comparator<T> comparator,
-			int k)
+	public static <T> ListNode<T> rotate(ListNode<T> head, Comparator<T> comparator, int k)
 	{
-		if(k <= 0)
+		if (k <= 0)
 		{
 			return head;
 		}
@@ -41,7 +40,7 @@ public class LinkedListOperations
 
 	private static <T> ListNode<T> getTail(ListNode<T> node)
 	{
-		while(node.next != null)
+		while (node.next != null)
 		{
 			node = node.next;
 		}
@@ -163,7 +162,7 @@ public class LinkedListOperations
 			int end,
 			Comparator<T> comparator)
 	{
-		if(start == end)
+		if (start == end)
 		{
 			return head;
 		}
@@ -175,14 +174,14 @@ public class LinkedListOperations
 		int k = 1;
 
 		// find the start of the sublist
-		while(k++ < start)
+		while (k++ < start)
 		{
 			subListHead = subListHead.next;
 		}
 
 		ListNode<T> subListIter = subListHead.next;
 
-		while(start++ < end)
+		while (start++ < end)
 		{
 			// save off the next link
 			ListNode<T> temp = subListIter.next;
@@ -227,6 +226,7 @@ public class LinkedListOperations
 
 	/**
 	 * Reverse the list in batches of size k, leave any remainder as is
+	 *
 	 * @param <T>
 	 * @param head
 	 * @param batch
@@ -261,12 +261,12 @@ public class LinkedListOperations
 		Map<ListNode<T>, Integer> hashTable = new Hashtable<>();
 		while (iter != null)
 		{
-			if(hashTable.containsKey(iter))
+			if (hashTable.containsKey(iter))
 			{
 				return iter;
 			}
 
-			hashTable.merge(iter, 1, (a,b) -> a + b);
+			hashTable.merge(iter, 1, (a, b) -> a + b);
 			iter = iter.next;
 		}
 
@@ -277,6 +277,7 @@ public class LinkedListOperations
 	 * Book solution #1, using fast and slow iterators. The cycle is found when the two equal each other.
 	 * We then calculate the length of the cycle, and set one pointer to the head and another to the
 	 * length, and advance each until they are equal ... where a is the start and b the end of the cycle.
+	 *
 	 * @param head
 	 * @param <T>
 	 * @return
@@ -336,12 +337,13 @@ public class LinkedListOperations
 	 * without calculating the cycle size, due to the following
 	 * Since tortoise travels x + y times before meeting
 	 * And the hare travels (x + y + z) + some extra y before meeting
-	 *
+	 * <p>
 	 * given that hare travels twice as fast, 2(x + y) = (x + y + z) + y
 	 * which reduces to x = z. Where z is the remaining steps in the cycle.
-	 *
+	 * <p>
 	 * There fore if we travel z steps from the head, both are guaranteed to meet
 	 * at the start of the cycle.
+	 *
 	 * @param head
 	 * @param <T>
 	 * @return
@@ -380,9 +382,10 @@ public class LinkedListOperations
 	/**
 	 * Find and return the node where a list converges with another list
 	 * this assumes there are no cycles in the list
+	 *
 	 * @param <T> The type of content in the nodes
-	 * @param a the first list
-	 * @param b the second list
+	 * @param a   the first list
+	 * @param b   the second list
 	 * @return
 	 */
 	public static <T> ListNode<T> getConvergence(ListNode<T> a, ListNode<T> b)
@@ -395,25 +398,19 @@ public class LinkedListOperations
 		int bSize = getListSize(b);
 		int delta = 0;
 
-		if(aSize > bSize)
+		if (aSize > bSize)
 		{
 			delta = aSize - bSize;
-			aIterator = getListNodeAtIndex(
-					delta,
-					a);
+			aIterator = getListNodeAtIndex(delta, a);
 
 		}
 		else
 		{
 			delta = bSize - aSize;
-			bIterator = getListNodeAtIndex(
-					delta,
-					b);
+			bIterator = getListNodeAtIndex(delta, b);
 		}
 
-		while(aIterator != bIterator
-				&& aIterator != null
-				&& bIterator != null)
+		while (aIterator != bIterator && aIterator != null && bIterator != null)
 		{
 			aIterator = aIterator.next;
 			bIterator = bIterator.next;
@@ -425,7 +422,7 @@ public class LinkedListOperations
 	public static <T> ListNode<T> getListNodeAtIndex(ListNode<T> listNode, int index)
 	{
 		ListNode<T> iterator = listNode;
-		while(index-- > 1)
+		while (index-- > 1)
 		{
 			iterator = iterator.next;
 		}
@@ -438,15 +435,13 @@ public class LinkedListOperations
 		ListNode<T> aCycle = getFirstCycle(a);
 		ListNode<T> bCycle = getFirstCycle(b);
 
-		if(aCycle == bCycle
-		   && aCycle != null
-		   && bCycle != null)
+		if (aCycle == bCycle && aCycle != null && bCycle != null)
 		{
 			return aCycle;
 		}
 
 		// if one list has a cycle and the other does not, it doesn't converge.
-		else if(aCycle != bCycle)
+		else if (aCycle != bCycle)
 		{
 			return null;
 		}
@@ -459,7 +454,7 @@ public class LinkedListOperations
 	public static <T> ListNode<T> deleteSuccessorNode(ListNode<T> node)
 	{
 		ListNode<T> nodeToDelete = node.next;
-		if(nodeToDelete == null)
+		if (nodeToDelete == null)
 		{
 			return null;
 		}
@@ -475,7 +470,7 @@ public class LinkedListOperations
 		ListNode<T> nodeToDelete = null;
 
 		// handle deleting the head
-		if(index == 1)
+		if (index == 1)
 		{
 			nodeToDelete = head;
 			head = head.next;
@@ -488,6 +483,7 @@ public class LinkedListOperations
 
 	/**
 	 * Uses a window to calculate the kth last node and delete it.
+	 *
 	 * @param head
 	 * @param k
 	 * @param <T>
@@ -495,12 +491,13 @@ public class LinkedListOperations
 	 */
 	public static <T> ListNode<T> deleteKthLastNode(ListNode<T> head, int k)
 	{
-		ListNode<T> second = getKthLastNode(head, k -1);
+		ListNode<T> second = getKthLastNode(head, k - 1);
 		return deleteSuccessorNode(second);
 	}
 
 	/**
 	 * Gets the kTh last node from the end of the list
+	 *
 	 * @param head
 	 * @param k
 	 * @param <T>
@@ -508,14 +505,14 @@ public class LinkedListOperations
 	 */
 	public static <T> ListNode<T> getKthLastNode(ListNode<T> head, int k)
 	{
-		if(k <= 0)
+		if (k <= 0)
 		{
 			return head;
 		}
 
 		ListNode<T> second = head;
 		ListNode<T> first = getListNodeAtIndex(head, k);
-		while(first != null)
+		while (first != null)
 		{
 			second = second.next;
 			first = first.next;
@@ -527,9 +524,9 @@ public class LinkedListOperations
 	public static <T> void removeDuplicates(ListNode<T> head)
 	{
 		ListNode<T> iterator = head;
-		while(iterator.next != null)
+		while (iterator.next != null)
 		{
-			if(iterator.compareTo(iterator.next.data) == 0)
+			if (iterator.compareTo(iterator.next.data) == 0)
 			{
 				deleteSuccessorNode(iterator);
 			}
@@ -541,7 +538,7 @@ public class LinkedListOperations
 	public static <T> int getListSize(ListNode<T> bIterator)
 	{
 		int count = 0;
-		while(bIterator != null)
+		while (bIterator != null)
 		{
 			bIterator = bIterator.next;
 			count++;
@@ -552,8 +549,9 @@ public class LinkedListOperations
 
 	/**
 	 * even odd merge of a list, assumes all lists start at index 0 (even element)
+	 *
 	 * @param head the head of the list
-	 * @param <T> The type parameter of the list
+	 * @param <T>  The type parameter of the list
 	 * @return the merged list
 	 */
 	public static <T> ListNode<T> evenOddMerge(ListNode<T> head)
@@ -562,9 +560,7 @@ public class LinkedListOperations
 		dummy.next = head;
 		head = head.next;
 
-		ListNode<T> odd = moveSuccessorNode(
-				head,
-				null);
+		ListNode<T> odd = moveSuccessorNode(head, null);
 
 		ListNode<T> oddHead = odd;
 
@@ -572,14 +568,12 @@ public class LinkedListOperations
 
 		// we have two pointers, leave the even list alone as moving all odd
 		// indexes will collate all even to the current head (even).
-		while(head != null)
+		while (head != null)
 		{
-			if(nodeIndex % 2 == 0)
+			if (nodeIndex % 2 == 0)
 			{
 				// even node, remove successor and place on temp odd list.
-				odd = moveSuccessorNode(
-						head,
-						odd);
+				odd = moveSuccessorNode(head, odd);
 			}
 
 			head = head.next;
@@ -587,6 +581,51 @@ public class LinkedListOperations
 		}
 
 		return dummy.next;
+	}
+
+	public static <T> ListNode<T> pivotList(ListNode<T> node, T k)
+	{
+		ListNode<T> dummy = new ListNode<T>(null);
+		dummy.next = node;
+
+		ListNode<T> pivotList = new ListNode<T>(null);
+		ListNode<T> kthMinusOneNode = findFirstPredecessor(node, k);
+		ListNode<T> ktheNode = moveSuccessorNode(kthMinusOneNode, null);
+		ktheNode.next = null;
+		pivotList.next = ktheNode;
+
+		while(dummy != null && dummy.next != null)
+		{
+			ListNode<T> temp = node;
+			int compareTo = ktheNode.compareTo(node.next.data);
+			switch (compareTo)
+			{
+				// If < k, then insert at head
+				// If > k, insert after k
+				// If == k, insert after k, move k by one.
+				case -1:
+					moveSuccessorNode(temp, ktheNode);
+					break;
+				case 0:
+					moveSuccessorNode(temp, ktheNode);
+					ktheNode = ktheNode.next;
+					break;
+				case 1:
+					moveSuccessorNode(temp, pivotList);
+					break;
+			}
+
+			dummy = dummy.next;
+		}
+
+		return pivotList.next;
+	}
+
+	private static <T> ListNode<T> removeHead(ListNode<T> node)
+	{
+		ListNode<T> temp = node.next;
+		node.next = null;
+		return temp;
 	}
 
 	private static <T> ListNode<T> moveSuccessorNode(
@@ -615,5 +654,56 @@ public class LinkedListOperations
 			head = head.next;
 		}
 		return head;
+	}
+
+	public static <T> ListNode<T> findFirst(ListNode<T> head, T data)
+	{
+		ListNode<T> iterator = head;
+		while(iterator != null)
+		{
+			if (iterator.compareTo(data) == 0)
+			{
+				return iterator;
+			}
+
+			iterator = iterator.next;
+		}
+
+		// not found
+		return null;
+	}
+
+	public static <T> ListNode<T> findFirstPredecessor(ListNode<T> head, T data)
+	{
+		ListNode<T> iterator = head;
+		while(iterator.next != null)
+		{
+			if (iterator.next.compareTo(data) == 0)
+			{
+				return iterator;
+			}
+
+			iterator = iterator.next;
+		}
+
+		// not found
+		return null;
+	}
+
+	public static <T> ListNode<T> getPredecessor(ListNode<T> head, ListNode<T> successor)
+	{
+		ListNode<T> iterator = head;
+		while(iterator.next != null)
+		{
+			if (iterator.next.compareTo(successor.data) == 0)
+			{
+				return iterator;
+			}
+
+			iterator = iterator.next;
+		}
+
+		// not found
+		return null;
 	}
 }
