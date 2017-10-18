@@ -5,7 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Created by clester on 7/31/2017.
+ * Bits class tests
  */
 public class BitsTest
 {

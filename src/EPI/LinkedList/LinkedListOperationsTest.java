@@ -32,6 +32,53 @@ class LinkedListOperationsTest
 	}
 
 	@Test
+	void add() {
+		// arrange
+		ListNode<Integer> a = new ListNode<>(Integer::compareTo);
+		list.add(9);
+		list.add(9);
+		list.add(9);
+		list.add(9);
+
+		ListNode<Integer> b = new ListNode<>(Integer::compareTo);
+		list.add(9);
+		list.add(9);
+		list.add(9);
+		list.add(9);
+
+		ListNode<Integer> expectedResult = new ListNode<>(Integer::compareTo);
+		list.add(1);
+		list.add(9);
+		list.add(9);
+		list.add(9);
+		list.add(8);
+
+		// act
+		ListNode<Integer> result = LinkedListOperations.add(a, b);
+
+		// assert
+		assertEquals(LinkedListOperations.getListSize(expectedResult), LinkedListOperations.getListSize(result));
+		while(expectedResult != null)
+		{
+			assertEquals(expectedResult.data, result.data);
+			expectedResult = expectedResult.next;
+			result = result.next;
+		}
+	}
+
+	@Test
+	void findFirst() {
+	}
+
+	@Test
+	void findFirstPredecessor() {
+	}
+
+	@Test
+	void getPredecessor() {
+	}
+
+	@Test
 	void getKthLastNode()
 	{
 	}
@@ -70,11 +117,15 @@ class LinkedListOperationsTest
 		list = list.next;
 		list.next = null;
 
+		int originalSize = LinkedListOperations.getListSize(head);
+
 		// act
 		ListNode<Integer> theList = LinkedListOperations.pivotList(head, 4);
 
 		// assert
 		ListNode<Integer> pivot = LinkedListOperations.findFirst(theList, 4);
+
+		assertEquals(originalSize, LinkedListOperations.getListSize(theList));
 
 		boolean beforePivot = true;
 		boolean inPivot = false;
@@ -87,22 +138,22 @@ class LinkedListOperationsTest
 			if(compareResult == 0)
 			{
 				assertFalse(afterPivot);
-
 				beforePivot = false;
 				inPivot = true;
 			}
 			else if(compareResult > 0)
 			{
-				assertFalse(beforePivot);
-
-				inPivot = false;
-				afterPivot = true;
+				assertTrue(beforePivot);
+				assertFalse(inPivot);
 			}
 			else if(compareResult < 0)
 			{
-				assertFalse(inPivot);
-				assertFalse(afterPivot);
+				assertFalse(beforePivot);
+				inPivot = false;
+				afterPivot = true;
 			}
+
+			theList = theList.next;
 		}
 	}
 

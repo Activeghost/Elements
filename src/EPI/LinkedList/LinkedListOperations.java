@@ -1,5 +1,7 @@
 package EPI.LinkedList;
 
+import org.omg.PortableInterceptor.INACTIVE;
+
 import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -588,61 +590,126 @@ public class LinkedListOperations
 		ListNode<T> dummy = new ListNode<T>(null);
 		dummy.next = node;
 
-		ListNode<T> pivotList = new ListNode<T>(null);
 		ListNode<T> kthMinusOneNode = findFirstPredecessor(node, k);
-		ListNode<T> ktheNode = moveSuccessorNode(kthMinusOneNode, null);
-		ktheNode.next = null;
-		pivotList.next = ktheNode;
+		ListNode<T> kthNode = deleteSuccessorNode(kthMinusOneNode);
+		ListNode<T> pivotList = kthNode;
+		kthNode.next = null;
 
-		while(dummy != null && dummy.next != null)
-		{
-			ListNode<T> temp = node;
-			int compareTo = ktheNode.compareTo(node.next.data);
-			switch (compareTo)
-			{
+		while(dummy.next != null) {
+			ListNode<T> temp = deleteSuccessorNode(dummy);
+			int compareTo = kthNode.compareTo(temp.data);
+
+			switch (compareTo) {
 				// If < k, then insert at head
 				// If > k, insert after k
 				// If == k, insert after k, move k by one.
 				case -1:
-					moveSuccessorNode(temp, ktheNode);
+					insertAfter(temp, kthNode);
 					break;
 				case 0:
-					moveSuccessorNode(temp, ktheNode);
-					ktheNode = ktheNode.next;
+					insertAfter(temp, kthNode);
+					kthNode = kthNode.next;
 					break;
 				case 1:
-					moveSuccessorNode(temp, pivotList);
+					pivotList = insertAtHead(temp, pivotList);
 					break;
 			}
-
-			dummy = dummy.next;
 		}
 
-		return pivotList.next;
+		return pivotList;
 	}
 
-	private static <T> ListNode<T> removeHead(ListNode<T> node)
+	public static ListNode<Integer> add(ListNode<Integer> a, ListNode<Integer> b)
 	{
-		ListNode<T> temp = node.next;
-		node.next = null;
-		return temp;
+		int carryIn = 0;
+		ListNode<Integer> head = new ListNode<>(Integer::compareTo);
+		ListNode<Integer> iter = head;
+
+		// while we have the same numeric columns, shift and add them both
+		while(a != null & b != null)
+		{
+			int sum = (a.data + b.data + carryIn) % 10;
+			carryIn = sum / 10;
+
+			iter.next = new ListNode<Integer>(sum, Integer::compareTo);
+			iter = iter.next;
+
+			a = a.next;
+			b = b.next;
+		}
+
+		ListNode<Integer> remainder;
+		if(a == null)
+		{
+			remainder = b;
+		}
+		else
+		{
+			remainder = a;
+		}
+
+		while(remainder != null)
+		{
+			int sum = (remainder.data + carryIn) % 10;
+			carryIn = sum / 10;
+
+			iter.next = new ListNode<>(sum, Integer::compareTo);
+			iter = iter.next;
+			remainder = remainder.next;
+		}
+
+		return head.next;
 	}
 
 	private static <T> ListNode<T> moveSuccessorNode(
 			ListNode<T> node,
-			ListNode<T> destinationList)
+			ListNode<T> tail)
 	{
 		final ListNode<T> tListNode = deleteSuccessorNode(node);
 		tListNode.next = null;
 
-		if(destinationList == null)
+		if(tail == null)
 		{
 			return tListNode;
 		}
 
-		destinationList.next = tListNode;
-		destinationList = destinationList.next;
-		return destinationList;
+		tail.next = tListNode;
+		tail = tail.next;
+		return tail;
+	}
+
+	private static <T> ListNode<T> insertAtHead(
+			ListNode<T> node,
+			ListNode<T> head)
+	{
+		// the start of the new list
+		if(head == null)
+		{
+			return node;
+		}
+
+		ListNode<T> dummy = new ListNode<T>(null);
+		dummy.next = head;
+
+		ListNode<T> temp = dummy.next;
+		dummy.next = node;
+		node.next = temp;
+		return dummy.next;
+	}
+
+	private static <T> ListNode<T> insertAfter(
+			ListNode<T> node,
+			ListNode<T> insertionPoint)
+	{
+		// the start of the new list
+		if(insertionPoint == null)
+		{
+			return node;
+		}
+
+		node.next = insertionPoint.next;
+		insertionPoint.next = node;
+		return insertionPoint;
 	}
 
 	private static <T> ListNode<T> getListNodeAtIndex(
