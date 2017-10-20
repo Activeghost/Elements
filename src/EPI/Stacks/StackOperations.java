@@ -2,6 +2,7 @@ package EPI.Stacks;
 
 import java.util.Deque;
 import java.util.LinkedList;
+import java.util.function.Consumer;
 
 import static EPI.Stacks.StackOperations.Operands.*;
 
@@ -11,7 +12,8 @@ import static EPI.Stacks.StackOperations.Operands.*;
 public class StackOperations
 {
 
-	private static Deque<Double> _stack;
+	private Deque<Double> _stack;
+	private Operands _operand = Operands.UNKNOWN;
 
 	enum Operands
 	{
@@ -22,35 +24,201 @@ public class StackOperations
 		UNKNOWN
 	}
 
-	public static Double evalRpnExpression(String rpn)
+	public String normalizePath(String path)
 	{
-		_stack = new LinkedList<>();
-		StringBuilder rpnElement = new StringBuilder();
+		StringBuilder thePath = new StringBuilder();
+		StringBuilder element = new StringBuilder();
+		Deque<String> stack = new LinkedList<>();
 
-		for(Character c : rpn.toCharArray())
+		for(int i = 0; i < path.length(); i++)
 		{
-			if(isRpnElementDelimiter(c))
+			char c = path.charAt(i);
+			if(c == '/')
 			{
-				// end of rpn element
-				processElement(rpnElement.toString());
-				rpnElement = new StringBuilder();
+				if(stack.isEmpty())
+				{
+					stack.push(Character.toString(c));
+					continue;
+				}
+
+				// collapse multiple /// into /
+				else if(stack.peek().equals("/") && element.length() == 0)
+				{
+					continue;
+				}
+
+				parsePathElement(element, stack, c);
+				element = new StringBuilder();
 			}
 			else
 			{
-				rpnElement.append(c);
+				element.append(c);
 			}
 		}
 
-		// check for case of only one element and no delimiter
-		if(rpnElement.length() > 0)
+		parsePathElement(element, stack, null);
+
+		stack
+				.descendingIterator()
+				.forEachRemaining(thePath::append);
+		return thePath.toString();
+	}
+
+	private void parsePathElement(StringBuilder element, Deque<String> stack, Character c) {
+		// close previous path
+		String s = element.toString();
+		switch (s) {
+            case ".":
+                // collapse these, they refer to the current directory
+				break;
+            case "..":
+                // remove previous element set (name, separator).
+                if (!stack.isEmpty()) {
+                    stack.pop();
+                    stack.pop();
+                }
+                break;
+            default:
+                // record the path element set (name and separator, eg. dir1/)
+                stack.push(element.toString());
+
+                if(c != null) {
+					stack.push(c.toString());
+				}
+				break;
+        }
+	}
+
+	public boolean isWellFormed(String param)
+	{
+		Deque<Character> stack = new LinkedList<>();
+
+		// push element
+		for(Character c : param.toCharArray())
 		{
-			processElement(rpnElement.toString());
+			// if matching pair, pop
+			if(isPair(stack.peek(), c))
+			{
+				stack.pop();
+			}
+			else {
+				// otherwise push
+				stack.push(c);
+			}
+		}
+
+		// return true if stack is empty.
+		return stack.isEmpty();
+	}
+
+	private boolean isPair(Character start, Character maybeEnd) {
+		if(start == null || maybeEnd == null)
+		{
+			return false;
+		}
+
+		boolean isPair = false;
+		switch(start)
+		{
+			case '(':
+				isPair = maybeEnd == ')';
+				break;
+			case '[':
+				isPair = maybeEnd == ']';
+				break;
+			case '{':
+				isPair = maybeEnd == '}';
+				break;
+		}
+
+		return isPair;
+	}
+
+	public Double evalPolishNotation(String pn)
+	{
+		resetState();
+		processElement(pn, this::processPolishNotationElement);
+		if(_stack.size() > 1)
+		{
+			Double b = _stack.pop();
+			Double a = _stack.pop();
+			return calculate(a, b, _operand);
 		}
 
 		return _stack.pop();
 	}
 
-	private static void processElement(String s)
+	public Double evalRpnExpression(String rpn)
+	{
+		processElement(rpn, this::processRpnElement);
+		resetState();
+
+		return _stack.pop();
+	}
+
+	private void resetState() {
+		_operand = Operands.UNKNOWN;
+	}
+
+	private void processElement(String pn, Consumer<String> consumer) {
+		_stack = new LinkedList<>();
+		StringBuilder element = new StringBuilder();
+
+		for(Character c : pn.toCharArray()) {
+			if(isElementDelimiter(c))
+			{
+				// end of rpn element
+				consumer.accept(element.toString());
+				element = new StringBuilder();
+			}
+			else
+			{
+				element.append(c);
+			}
+		}
+
+		// check for case of only one element and no delimiter
+		if(element.length() > 0)
+		{
+			consumer.accept(element.toString());
+		}
+	}
+
+	private void processPolishNotationElement(String s)
+	{
+		Double result = 0.0d;
+		if(s.isEmpty())
+		{
+			return;
+		}
+
+		if(isOperand(s))
+		{
+			// get our operand
+			Operands op = getOperand(s);
+
+			// first time through we haven't set an operand
+			if(_operand != Operands.UNKNOWN)
+			{
+				// pop last two off queue in reverse order (b was just added)
+				Double b = _stack.pop();
+				Double a = _stack.pop();
+
+				// apply operand and push the result
+				result = calculate(a, b, _operand);
+				_stack.push(result);
+			}
+
+			_operand = op;
+		}
+		else
+		{
+			result = Double.parseDouble(s);
+			_stack.push(result);
+		}
+	}
+
+	private void processRpnElement(String s)
 	{
 		Double result;
 		if(isOperand(s))
@@ -73,7 +241,7 @@ public class StackOperations
 		_stack.push(result);
 	}
 
-	private static Double calculate(double a, double b, Operands operand)
+	private Double calculate(double a, double b, Operands operand)
 	{
 		Double result = 0d;
 		switch(operand)
@@ -97,7 +265,7 @@ public class StackOperations
 		return result;
 	}
 
-	private static Operands getOperand(String s)
+	private Operands getOperand(String s)
 	{
 		Operands operand;
 		switch(s)
@@ -121,12 +289,12 @@ public class StackOperations
 		return operand;
 	}
 
-	private static boolean isRpnElementDelimiter(Character c)
+	private boolean isElementDelimiter(Character c)
 	{
 		return c == ',';
 	}
 
-	private static boolean isOperand(String maybeOperand)
+	private boolean isOperand(String maybeOperand)
 	{
 		// cannot be an operand if this is larger than 1
 		if(maybeOperand.length() > 1)
