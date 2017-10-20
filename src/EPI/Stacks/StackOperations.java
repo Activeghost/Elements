@@ -35,14 +35,19 @@ public class StackOperations
 			char c = path.charAt(i);
 			if(c == '/')
 			{
-				if(stack.isEmpty())
+				boolean stackEmpty = stack.isEmpty();
+				int length = element.length();
+
+				if(stackEmpty && length == 0)
 				{
 					stack.push(Character.toString(c));
 					continue;
 				}
 
 				// collapse multiple /// into /
-				else if(stack.peek().equals("/") && element.length() == 0)
+				else if(!stackEmpty
+                        && stack.peek().equals("/")
+                        && length == 0)
 				{
 					continue;
 				}
@@ -56,7 +61,17 @@ public class StackOperations
 			}
 		}
 
-		parsePathElement(element, stack, null);
+		// check for unparsed last element.
+		if(element.length() > 0) {
+            parsePathElement(element, stack, null);
+        }
+
+		// after which we do not need a trailing slash
+		if(stack.peek().equals("/"))
+		{
+		    stack.pop();
+		}
+
 
 		stack
 				.descendingIterator()
