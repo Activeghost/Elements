@@ -1,7 +1,5 @@
 package EPI.LinkedList;
 
-import org.omg.PortableInterceptor.INACTIVE;
-
 import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -13,6 +11,37 @@ import java.util.Optional;
  */
 public class LinkedListOperations
 {
+	public static <T> boolean isPalindrome(ListNode<T> head)
+	{
+		ListNode<T>  fast = head;
+		ListNode<T>  slow = head;
+
+		// find the midpoint
+		while(fast != null && fast.next != null)
+		{
+			fast = fast.next.next;
+			slow = slow.next;
+		}
+
+		ListNode<T>  firstSection = head;
+
+		// reverse the rest of the list
+		ListNode<T>  secondSection = reverse(slow);
+
+		while(secondSection != null)
+		{
+			if(firstSection.data != secondSection.data)
+			{
+				return false;
+			}
+
+			firstSection = firstSection.next;
+			secondSection = secondSection.next;
+		}
+
+		return true;
+	}
+
 	/**
 	 * Rotate the list by k rotations
 	 *
@@ -199,9 +228,9 @@ public class LinkedListOperations
 		return dummy.next;
 	}
 
-	public static <T> ListNode<T> reverseListInBatches(ListNode<T> head, Comparator<T> comparator)
+	public static <T> ListNode<T> reverse(ListNode<T> head)
 	{
-		ListNode<T> dummy = new ListNode<T>(comparator);
+		ListNode<T> dummy = new ListNode<T>(null);
 		dummy.next = head;
 
 		ListNode<T> current = dummy.next;
@@ -234,7 +263,7 @@ public class LinkedListOperations
 	 * @param batch
 	 * @param comparator
 	 */
-	public static <T> ListNode<T> reverseListInBatches(ListNode<T> head, int batch, Comparator<T> comparator)
+	public static <T> ListNode<T> reverse(ListNode<T> head, int batch, Comparator<T> comparator)
 	{
 		ListNode<T> current = head;
 

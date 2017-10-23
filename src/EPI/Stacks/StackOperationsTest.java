@@ -55,6 +55,16 @@ public class StackOperationsTest
 	}
 
 	@Test
+	void computeJumpOrderRecursive()
+	{
+	}
+
+	@Test
+	void computeJumpOrder()
+	{
+	}
+
+	@Test
 	void normalizePath() {
 		StackOperations stackOperations = new StackOperations();
 		for(Object[] paramObject : getNormalizationTestData())

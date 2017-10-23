@@ -6,6 +6,9 @@ import java.util.function.Consumer;
 
 import static EPI.Stacks.StackOperations.Operands.*;
 
+import EPI.LinkedList.JumpListNode;
+import EPI.LinkedList.ListNode;
+
 /**
  * Stack operations
  */
@@ -22,6 +25,37 @@ public class StackOperations
 		MINUS,
 		MULTIPLY,
 		UNKNOWN
+	}
+
+	public <T> void computeJumpOrderRecursive(JumpListNode<T> postings)
+	{
+		computeJumpOrderHelper(postings, 0);
+	}
+
+	public <T> Deque<T> computeJumpOrder(JumpListNode<T> postings)
+	{
+		Deque<T> jumpOrdering = new LinkedList<>();
+		Deque<T> processedNodes = new LinkedList<>();
+
+		JumpListNode<T> iterator = postings;
+		while(iterator != null)
+		{
+
+		}
+
+		return jumpOrdering;
+	}
+
+	private <T> int computeJumpOrderHelper(JumpListNode<T> node, int order)
+	{
+		if(node != null && node.order == -1)
+		{
+			node.order = order++;
+			order = computeJumpOrderHelper((JumpListNode<T>)node.jumpTo, order);
+			order = computeJumpOrderHelper((JumpListNode<T>)node.next, order);
+		}
+
+		return order;
 	}
 
 	public String normalizePath(String path)
