@@ -1,8 +1,15 @@
 package EPI.Strings;
 
 import java.math.BigInteger;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.Set;
 
 /**
  * Implementation of the Rabin-Karpe string search algorithm
@@ -13,7 +20,6 @@ public class RabinKarpe
 
 	private int _base;
 	private int _modulus;
-	private int _powerS = 1;
 
 	/**
 	 * Instances this class for English strings
@@ -38,10 +44,78 @@ public class RabinKarpe
 		_modulus = BigInteger.probablePrime(31, new Random()).intValue();
 	}
 
+	public int indexOf(String source, Collection<String> targets)
+	{
+		// guard against poor inputs
+		targets.removeIf(s-> isNullOrEmpty(s));
+		if(isNullOrEmpty(source) || targets.isEmpty())
+		{
+			return NOT_FOUND;
+		}
+
+
+		// start at the length of the substring
+		int sourceLen = source.length();
+
+		if(targets.stream().allMatch(substr -> substr.length() > sourceLen))
+		{
+			return NOT_FOUND;
+		}
+
+		int powerS = 1;
+		Set<Integer> targetHashes = new HashSet<>();
+		Queue<Integer> rollingSourceHashes = new LinkedList<>();
+
+		for(String target : targets)
+		{
+			targetHashes.add(computeHash(target, powerS));
+			rollingSourceHashes.add(computeHash(source.substring(0, target.length()), powerS));
+		}
+
+
+		int possibleMatchIndex;
+		int minTargetLen = targets
+				.stream()
+				.min((a, b) -> a.length() < b.length() ? -1 : 1)
+				.get()
+				.length();
+
+		int sourceHash = computeHash(source.substring(0, minTargetLen), powerS);
+
+		for(int i = minTargetLen; i < sourceLen; i++)
+		{
+			possibleMatchIndex = i - minTargetLen;
+			if(targetHashes.contains(sourceHash)
+			   && targets.contains(source.substring(possibleMatchIndex, i)))
+			{
+				return possibleMatchIndex;
+			}
+
+			rollingSourceHashes.
+			sourceHash = computeRollingHash(
+					sourceHash,
+					source.charAt(possibleMatchIndex),
+					source.charAt(i), powerS);
+		}
+
+		// possibly match at end of source.
+		possibleMatchIndex = sourceLen - targetLen;
+
+		if(sourceHash == targetHash && source
+				.substring(possibleMatchIndex)
+				.equals(target))
+		{
+			return possibleMatchIndex;
+		}
+
+		return NOT_FOUND;
+
+	}
+
 	public int indexOf(String source, String target)
 	{
 		// guard against poor inputs
-		if(source == null || target == null || source.isEmpty() || target.isEmpty())
+		if(isNullOrEmpty(source) || isNullOrEmpty(target))
 		{
 			return NOT_FOUND;
 		}
@@ -55,8 +129,9 @@ public class RabinKarpe
 			return NOT_FOUND;
 		}
 
-		int targetHash = computeHash(target);
-		int sourceHash = computeHash(source.substring(0, targetLen));
+		int powerS = 1;
+		int targetHash = computeHash(target, powerS);
+		int sourceHash = computeHash(source.substring(0, targetLen), powerS);
 
 		int possibleMatchIndex;
 		for(int i = targetLen; i < sourceLen; i++)
@@ -70,7 +145,7 @@ public class RabinKarpe
 			sourceHash = computeRollingHash(
 					sourceHash,
 					source.charAt(possibleMatchIndex),
-					source.charAt(i));
+					source.charAt(i), powerS);
 		}
 
 		// possibly match at end of source.
@@ -85,19 +160,24 @@ public class RabinKarpe
 		return NOT_FOUND;
 	}
 
-	private int computeRollingHash(int targetHash, char oldChar, char newChar)
+	private boolean isNullOrEmpty(String source)
 	{
-		targetHash -= oldChar * _powerS;
+		return source == null || source.isEmpty();
+	}
+
+	private int computeRollingHash(int targetHash, char oldChar, char newChar, int powerS)
+	{
+		targetHash -= oldChar * powerS;
 		return targetHash * _base + newChar % _modulus;
 	}
 
-	private int computeHash(String s)
+	private int computeHash(String s, int powerS)
 	{
 		int hash = 0;
 
 		for(int i = 0; i < s.length(); i++)
 		{
-			_powerS = i > 0 ? _powerS * _base : 1;
+			powerS = i > 0 ? powerS * _base : 1;
 			hash = hash * _base + s.charAt(i);
 		}
 
