@@ -1,7 +1,6 @@
 package EPI.Stacks;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
@@ -52,6 +51,45 @@ public class StackOperationsTest
 		params.add(new Object[] { "/usr/bin/gcc", "/usr/lib/../bin/gcc"});
 		params.add(new Object[] { "scripts/awkscripts", "scripts//./../scripts/awkscripts/././"});
 		return params;
+	}
+
+	private Collection<Building> getBuildingCollection()
+	{
+		Collection<Building> buildings = new ArrayList<>();
+		Random rand = new Random();
+		int count = rand.nextInt(100);
+		for(int i = 0; i < count; i++)
+		{
+			buildings.add(new Building(i, rand.nextInt(100)));
+		}
+
+		return buildings;
+	}
+
+	@Test
+	void getBuildingsWithAViewEastToWest() {
+		StackOperations stackOperations = new StackOperations();
+		Deque<Building> buildings = stackOperations.getBuildingsWithAViewEastToWest(getBuildingCollection().iterator());
+
+		Iterator<Building> iter = buildings.iterator();
+		Building previous = iter.next();
+		while(iter.hasNext())
+		{
+			assertTrue(iter.next().height > previous.height);
+		}
+	}
+
+	@Test
+	void getBuildingsWithAView() {
+		StackOperations stackOperations = new StackOperations();
+		Deque<Building> buildings = stackOperations.getBuildingsWithAView(getBuildingCollection().iterator());
+
+		Iterator<Building> iter = buildings.descendingIterator();
+		Building previous = iter.next();
+		while(iter.hasNext())
+		{
+			assertTrue(iter.next().height > previous.height);
+		}
 	}
 
 	@Test

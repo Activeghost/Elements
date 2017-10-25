@@ -1,6 +1,9 @@
 package EPI.Stacks;
 
+import EPI.LinkedList.JumpListNode;
+
 import java.util.Deque;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.function.Consumer;
 
@@ -23,6 +26,62 @@ public class StackOperations
 		MULTIPLY,
 		UNKNOWN
 	}
+
+	public <T> void computeJumpOrder(JumpListNode<T> ads)
+    {
+        // need to understand why we would add the order totals together.
+        // problem does not make sense in terms of a solution.
+    }
+
+    /**
+     * Take in a west to east sequence of buildings that have a westerly windows. If a building is smaller
+     * than those to the west it cannot have a view
+     * @param sequence the sequence of buildings
+     * @return a stack of buildings that have views
+     */
+    public Deque<Building> getBuildingsWithAViewEastToWest(Iterator<Building> sequence)
+    {
+        LinkedList<Building> buildingsWithAView = new LinkedList<>();
+        buildingsWithAView.push(sequence.next());
+
+        while(sequence.hasNext())
+        {
+            Building building = sequence.next();
+            if(building.height > buildingsWithAView.peek().height)
+            {
+                buildingsWithAView.removeIf((maybeSmallerBuilding) -> maybeSmallerBuilding.height < building.height);
+            }
+
+            buildingsWithAView.push(building);
+        }
+
+        return buildingsWithAView;
+    }
+
+    /**
+     * Take in a west to east sequence of buildings that have a westerly windows. If a building is smaller
+     * than those to the west it cannot have a view
+     * @param sequence the sequence of buildings
+     * @return a stack of buildings that have views
+     */
+    public Deque<Building> getBuildingsWithAView(Iterator<Building> sequence)
+    {
+        LinkedList<Building> buildingsWithAView = new LinkedList<>();
+        buildingsWithAView.push(sequence.next());
+
+        while(sequence.hasNext())
+        {
+            Building building = sequence.next();
+            if(building.height < buildingsWithAView.peek().height)
+            {
+                continue;
+            }
+
+            buildingsWithAView.push(building);
+        }
+
+        return buildingsWithAView;
+    }
 
 	public String normalizePath(String path)
 	{
@@ -71,7 +130,6 @@ public class StackOperations
 		{
 		    stack.pop();
 		}
-
 
 		stack
 				.descendingIterator()
