@@ -2,14 +2,17 @@ package EPI.Strings;
 
 import java.math.BigInteger;
 import java.util.Collection;
-import java.util.Comparator;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
-import java.util.Queue;
+import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.stream.Collectors;
+
+import EPI.Math.Util;
 
 /**
  * Implementation of the Rabin-Karpe string search algorithm
@@ -19,29 +22,30 @@ public class RabinKarpe
 	private final int NOT_FOUND = -1;
 
 	private int _base;
-	private int _modulus;
+	private final long _Q  = BigInteger.probablePrime(31, new Random()).intValue();
+	private Hashing _hashing;
 
 	/**
 	 * Instances this class for English strings
 	 */
 	public RabinKarpe()
 	{
-		init(26);
+		init(256);
 	}
 
 	/**
 	 * Instances this class
-	 * @param alphabetSize the number of characters in the alphabet being searched.
+	 * @param base a prime greater than the number of characters in the alphabet being searched.
 	 */
-	public RabinKarpe(int alphabetSize)
+	public RabinKarpe(int base)
 	{
-		init(alphabetSize);
+		init(base);
 	}
 
-	private void init(int alphabetSize)
+	private void init(int base)
 	{
-		_base = alphabetSize;
-		_modulus = BigInteger.probablePrime(31, new Random()).intValue();
+		_base = base;
+		 _hashing = new Hashing(base);
 	}
 
 	public int indexOf(String source, Collection<String> targets)
@@ -53,7 +57,6 @@ public class RabinKarpe
 			return NOT_FOUND;
 		}
 
-
 		// start at the length of the substring
 		int sourceLen = source.length();
 
@@ -62,54 +65,81 @@ public class RabinKarpe
 			return NOT_FOUND;
 		}
 
-		int powerS = 1;
-		Set<Integer> targetHashes = new HashSet<>();
-		Queue<Integer> rollingSourceHashes = new LinkedList<>();
+		Set<Long> targetHashes = new HashSet<>();
 
+		// <Hash, Hashed String Length>
+		HashMap<Long, Integer> rollingSourceHashes = new HashMap<>();
+		List<Long> powValues = new LinkedList<>();
+
+		long powerS;
 		for(String target : targets)
 		{
-			targetHashes.add(computeHash(target, powerS));
-			rollingSourceHashes.add(computeHash(source.substring(0, target.length()), powerS));
+			final long hash = _hashing.computeHash(target);
+			targetHashes.add(hash);
+
+			powerS = Util.computePow(_Q, _base, target.length());
+			powValues.add(powerS);
+
+			rollingSourceHashes.put(
+					_hashing.computeHash(source.substring(0, target.length())),
+					target.length());
 		}
 
 
 		int possibleMatchIndex;
-		int minTargetLen = targets
+		int maxTargetLen = targets
 				.stream()
-				.min((a, b) -> a.length() < b.length() ? -1 : 1)
+				.min((a, b) -> a.length() > b.length() ? -1 : 1)
 				.get()
 				.length();
 
-		int sourceHash = computeHash(source.substring(0, minTargetLen), powerS);
+		long sourceHash = _hashing.computeHash(source.substring(0, maxTargetLen));
 
-		for(int i = minTargetLen; i < sourceLen; i++)
+		for(int i = maxTargetLen; i < sourceLen; i++)
 		{
-			possibleMatchIndex = i - minTargetLen;
-			if(targetHashes.contains(sourceHash)
+			possibleMatchIndex = i - maxTargetLen;
+			if(!Collections.disjoint(targetHashes, rollingSourceHashes.keySet())
 			   && targets.contains(source.substring(possibleMatchIndex, i)))
 			{
 				return possibleMatchIndex;
 			}
 
-			rollingSourceHashes.
-			sourceHash = computeRollingHash(
-					sourceHash,
-					source.charAt(possibleMatchIndex),
-					source.charAt(i), powerS);
+			// update all source hashes.
+			Set<Map.Entry<Long, Integer>> entries = new HashSet<>(rollingSourceHashes.entrySet());
+			int index = 0;
+
+			for(Map.Entry<Long, Integer> entry: entries)
+			{
+				Long prevHash = entry.getKey();
+				Integer substrLen = entry.getValue();
+
+				long hash = _hashing.computeRollingHash(
+						prevHash,
+						source.charAt(i - substrLen),
+						source.charAt(i),
+						powValues.get(index));
+
+				rollingSourceHashes.put(hash, substrLen);
+				rollingSourceHashes.remove(prevHash);
+				index++;
+			}
 		}
 
 		// possibly match at end of source.
-		possibleMatchIndex = sourceLen - targetLen;
-
-		if(sourceHash == targetHash && source
-				.substring(possibleMatchIndex)
-				.equals(target))
+		targetHashes.retainAll(rollingSourceHashes.keySet());
+		if(!targetHashes.isEmpty())
 		{
-			return possibleMatchIndex;
+			possibleMatchIndex = sourceLen - rollingSourceHashes.get(targetHashes
+																			 .stream()
+																			 .findFirst()
+																			 .orElse(0l));
+			if (targets.contains(source.substring(possibleMatchIndex)))
+			{
+				return possibleMatchIndex;
+			}
 		}
 
 		return NOT_FOUND;
-
 	}
 
 	public int indexOf(String source, String target)
@@ -129,9 +159,9 @@ public class RabinKarpe
 			return NOT_FOUND;
 		}
 
-		int powerS = 1;
-		int targetHash = computeHash(target, powerS);
-		int sourceHash = computeHash(source.substring(0, targetLen), powerS);
+		long powerS = Util.computePow(_Q, _base, targetLen);
+		long targetHash = _hashing.computeHash(target);
+		long sourceHash = _hashing.computeHash(source.substring(0, targetLen));
 
 		int possibleMatchIndex;
 		for(int i = targetLen; i < sourceLen; i++)
@@ -142,10 +172,9 @@ public class RabinKarpe
 				return possibleMatchIndex;
 			}
 
-			sourceHash = computeRollingHash(
-					sourceHash,
-					source.charAt(possibleMatchIndex),
-					source.charAt(i), powerS);
+			char oldChar = source.charAt(possibleMatchIndex);
+			char newChar = source.charAt(i);
+			sourceHash = _hashing.computeRollingHash(sourceHash, oldChar, newChar, powerS);
 		}
 
 		// possibly match at end of source.
@@ -163,24 +192,5 @@ public class RabinKarpe
 	private boolean isNullOrEmpty(String source)
 	{
 		return source == null || source.isEmpty();
-	}
-
-	private int computeRollingHash(int targetHash, char oldChar, char newChar, int powerS)
-	{
-		targetHash -= oldChar * powerS;
-		return targetHash * _base + newChar % _modulus;
-	}
-
-	private int computeHash(String s, int powerS)
-	{
-		int hash = 0;
-
-		for(int i = 0; i < s.length(); i++)
-		{
-			powerS = i > 0 ? powerS * _base : 1;
-			hash = hash * _base + s.charAt(i);
-		}
-
-		return hash % _modulus;
 	}
 }
