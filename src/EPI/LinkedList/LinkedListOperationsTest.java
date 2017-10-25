@@ -1,8 +1,6 @@
 package EPI.LinkedList;
 
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
@@ -29,6 +27,32 @@ class LinkedListOperationsTest
 		list.add(5);
 		list.add(3);
 		list.add(1);
+	}
+
+	@Test
+	void isPalindrome()
+	{
+		ListNode<Integer> a = new ListNode<>(9, Integer::compareTo);
+		a.next = new ListNode<>(9, Integer::compareTo);
+		a.next = new ListNode<>(1, Integer::compareTo);
+		a.next = new ListNode<>(9, Integer::compareTo);
+		a.next = new ListNode<>(9, Integer::compareTo);
+
+		assertTrue(LinkedListOperations.isPalindrome(a));
+
+		ListNode<Character> b = new ListNode<>('T', Character::compareTo);
+		b.next = new ListNode<>('A', Character::compareTo);
+		b.next = new ListNode<>('C', Character::compareTo);
+		b.next = new ListNode<>('C', Character::compareTo);
+		b.next = new ListNode<>('A', Character::compareTo);
+		b.next = new ListNode<>('T', Character::compareTo);
+
+		assertTrue(LinkedListOperations.isPalindrome(b));
+
+		ListNode<Integer> c = new ListNode<>(1, Integer::compareTo);
+		c.next = new ListNode<>(2, Integer::compareTo);
+		c.next = new ListNode<>(1, Integer::compareTo);
+	    assertTrue(LinkedListOperations.isPalindrome(c));
 	}
 
 	@Test
@@ -349,7 +373,7 @@ class LinkedListOperationsTest
 	void reverseListInBatches()
 	{
 		_aHead = getSkipList(1, 1);
-		_aHead = LinkedListOperations.reverseListInBatches(_aHead, 10, Integer::compareTo);
+		_aHead = LinkedListOperations.reverse(_aHead, 10, Integer::compareTo);
 
 		assertBatchReversal(10, 20, _aHead);
 	}
@@ -358,7 +382,7 @@ class LinkedListOperationsTest
 	void reverseList()
 	{
 		_aHead = getSkipList(1, 1);
-		_aHead = LinkedListOperations.reverseListInBatches(_aHead, Integer::compareTo);
+		_aHead = LinkedListOperations.reverse(_aHead);
 
 		assertListReversal(_aHead);
 	}

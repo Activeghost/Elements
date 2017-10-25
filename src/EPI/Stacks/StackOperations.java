@@ -1,13 +1,14 @@
 package EPI.Stacks;
 
-import EPI.LinkedList.JumpListNode;
-
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.function.Consumer;
 
 import static EPI.Stacks.StackOperations.Operands.*;
+
+import EPI.LinkedList.JumpListNode;
+import EPI.LinkedList.ListNode;
 
 /**
  * Stack operations
@@ -27,11 +28,36 @@ public class StackOperations
 		UNKNOWN
 	}
 
-	public <T> void computeJumpOrder(JumpListNode<T> ads)
-    {
-        // need to understand why we would add the order totals together.
-        // problem does not make sense in terms of a solution.
-    }
+	public <T> void computeJumpOrderRecursive(JumpListNode<T> postings)
+	{
+		computeJumpOrderHelper(postings, 0);
+	}
+
+	public <T> Deque<T> computeJumpOrder(JumpListNode<T> postings)
+	{
+		Deque<T> jumpOrdering = new LinkedList<>();
+		Deque<T> processedNodes = new LinkedList<>();
+
+		JumpListNode<T> iterator = postings;
+		while(iterator != null)
+		{
+
+		}
+
+		return jumpOrdering;
+	}
+
+	private <T> int computeJumpOrderHelper(JumpListNode<T> node, int order)
+	{
+		if(node != null && node.order == -1)
+		{
+			node.order = order++;
+			order = computeJumpOrderHelper((JumpListNode<T>)node.jumpTo, order);
+			order = computeJumpOrderHelper((JumpListNode<T>)node.next, order);
+		}
+
+		return order;
+	}
 
     /**
      * Take in a west to east sequence of buildings that have a westerly windows. If a building is smaller

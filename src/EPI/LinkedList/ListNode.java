@@ -29,3 +29,4 @@ public class ListNode<T> implements Comparable<T>
 		return _comparator.compare(this.data, data);
 	}
 }
+
