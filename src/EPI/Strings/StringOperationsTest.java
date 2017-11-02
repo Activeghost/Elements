@@ -1,4 +1,4 @@
-package EPI;
+package EPI.Strings;
 
 import java.util.*;
 

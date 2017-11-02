@@ -1,8 +1,5 @@
 package EPI.Queues;
 
-import java.util.Deque;
-import java.util.LinkedList;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
