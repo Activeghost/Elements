@@ -3,10 +3,14 @@
  */
 package EPI.Trees;
 
+import org.omg.CORBA.TRANSACTION_REQUIRED;
+
 import java.util.Comparator;
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 /**
@@ -81,12 +85,49 @@ public class BinaryTree<K, V> {
      * Perform a breadth first traversal
      * @param consumer
      */
+    public void breadthFirstTraversal(BiConsumer<INode<K, V>, Integer> consumer)
+    {
+        Deque<INode<K, V>> queue = new LinkedList<>();
+        queue.push(_root);
+
+        traverseBreadthFirst(queue, consumer, 1);
+    }
+
+    /**
+     * Perform a breadth first traversal
+     * @param consumer
+     */
     public void breadthFirstTraversal(Consumer<INode<K, V>> consumer)
     {
         Deque<INode<K, V>> children = new LinkedList<>();
         processNodeForBreathFirstTraversal(children, _root, consumer);
 
         traverseBreadthFirst(children, consumer);
+    }
+
+    /**
+     * Perform a breadth first traversal
+     * @param consumer
+     */
+    public void bottomUpBreadthFirstTraversal(Consumer<INode<K, V>> consumer)
+    {
+        Deque<INode<K, V>> treeOrder = new LinkedList<>();
+        Deque<INode<K, V>> queue = new LinkedList<>();
+
+        queue.push(_root);
+        while(queue.size() > 0)
+        {
+            // add them R -> L as we'll be reading them off backwards
+            INode<K, V> node = queue.pop();
+            treeOrder.push(node);
+            addRightChild(queue, node);
+            addLeftChild(queue, node);
+        }
+
+        while(treeOrder.size() > 0)
+        {
+            consumer.accept(treeOrder.pop());
+        }
     }
 
     /**
@@ -126,6 +167,30 @@ public class BinaryTree<K, V> {
         }
 
         traverseBreadthFirst(children, consumer);
+    }
+
+    private void traverseBreadthFirst(
+            Deque<INode<K, V>> currentLevel,
+            BiConsumer<INode<K, V>, Integer> consumer,
+            int depth)
+    {
+        if(currentLevel.isEmpty())
+        {
+            return;
+        }
+
+        // For all current nodes, add their children to child queue
+        // in a left to right ordering
+        Deque<INode<K, V>> children = new LinkedList<>();
+
+        while(!currentLevel.isEmpty())
+        {
+            INode<K, V> parent = currentLevel.removeFirst();
+            consumer.accept(parent, depth);
+            processNodeForBreathFirstTraversal(children, parent);
+        }
+
+        traverseBreadthFirst(children, consumer, depth + 1);
     }
 
     private void traverseDonkeyKong(Deque<INode<K, V>> currentLevel,
@@ -190,9 +255,17 @@ public class BinaryTree<K, V> {
 		}
     }
 
+    private void addRightChild(Deque<INode<K, V>> children, INode<K, V> parent)
+    {
+        if(parent.hasRightChild())
+		{
+			children.addLast(parent.getRight());
+		}
+    }
+
     private void processNodeForBreathFirstTraversal(Deque<INode<K, V>> children,
-            INode<K, V> parent,
-            Consumer<INode<K, V>> consumer)
+                                                    INode<K, V> parent,
+                                                    Consumer<INode<K, V>> consumer)
     {
         consumer.accept(parent);
 
@@ -200,12 +273,11 @@ public class BinaryTree<K, V> {
         addRightChild(children, parent);
     }
 
-    private void addRightChild(Deque<INode<K, V>> children, INode<K, V> parent)
+    private void processNodeForBreathFirstTraversal(Deque<INode<K, V>> children,
+                                                    INode<K, V> parent)
     {
-        if(parent.hasRightChild())
-		{
-			children.addLast(parent.getRight());
-		}
+        addLeftChild(children, parent);
+        addRightChild(children, parent);
     }
 
     public int size()

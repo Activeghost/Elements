@@ -80,7 +80,6 @@ public class BoyerMoore
 		findWidestBorderSuffixes(pattern, _suffixJumpTable, _suffixWidths);
 	}
 
-
 	/**
 	 * Fills a table of the alphabet size with the jump values for a character mismatch.
 	 * If the char in a pattern of size N is not the in the pattern then jump N spaces
