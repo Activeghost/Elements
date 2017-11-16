@@ -7,6 +7,8 @@ import java.util.Comparator;
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 /**
@@ -81,6 +83,18 @@ public class BinaryTree<K, V> {
      * Perform a breadth first traversal
      * @param consumer
      */
+    public void breadthFirstTraversal(BiConsumer<INode<K, V>, Integer> consumer)
+    {
+        Deque<INode<K, V>> queue = new LinkedList<>();
+        queue.push(_root);
+
+        traverseBreadthFirst(queue, consumer, 1);
+    }
+
+    /**
+     * Perform a breadth first traversal
+     * @param consumer
+     */
     public void breadthFirstTraversal(Consumer<INode<K, V>> consumer)
     {
         Deque<INode<K, V>> current = new LinkedList<>();
@@ -97,6 +111,31 @@ public class BinaryTree<K, V> {
         Deque<INode<K, V>> current = new LinkedList<>();
         current.add(_root);
         traverseDepthFirst(current, consumer);
+    }
+
+    /**
+     * Perform a breadth first traversal
+     * @param consumer
+     */
+    public void bottomUpBreadthFirstTraversal(Consumer<INode<K, V>> consumer)
+    {
+        Deque<INode<K, V>> treeOrder = new LinkedList<>();
+        Deque<INode<K, V>> queue = new LinkedList<>();
+
+        queue.push(_root);
+        while(queue.size() > 0)
+        {
+            // add them R -> L as we'll be reading them off backwards
+            INode<K, V> node = queue.pop();
+            treeOrder.push(node);
+            addRightChild(queue, node);
+            addLeftChild(queue, node);
+        }
+
+        while(treeOrder.size() > 0)
+        {
+            consumer.accept(treeOrder.pop());
+        }
     }
 
     /**

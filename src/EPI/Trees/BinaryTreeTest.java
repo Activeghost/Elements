@@ -2,8 +2,7 @@ package EPI.Trees;
 
 import org.junit.Test;
 
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -14,6 +13,17 @@ import EPI.Strings.StringOperations;
  */
 public class BinaryTreeTest {
     private static int sum = 0;
+
+    @Test
+    public void bottomUpBreadthOrder()
+    {
+        StringBuilder s = new StringBuilder();
+        String expected = "9 12 1 4 5 7 11 15 3 6 10 13 5 11 7";
+        BinaryTree<String, Integer> tree = buildSimpleTree();
+
+        tree.bottomUpBreadthFirstTraversal(n -> s.append(n.getValue()).append(" "));
+        assertEquals(expected, s.toString().trim());
+    }
 
     @Test
     public void donkeyKongTraversal() throws Exception
@@ -29,6 +39,22 @@ public class BinaryTreeTest {
     @Test
     public void size() throws Exception
     {
+    }
+
+    @Test
+    public void breadthFirstTraversal_AverageKey() throws Exception
+    {
+        Map<Integer,Double> expectedResult = new HashMap<>();
+        expectedResult.put(1, 1.0);
+        expectedResult.put(2, 2.5);
+        expectedResult.put(3, 5.5);
+        expectedResult.put(4, 10.5D);
+
+        KeyAveragingAccumulator accumulator = new KeyAveragingAccumulator();
+        BinaryTree<Integer, String> tree = buildIntegerKeyedTree();
+
+        tree.breadthFirstTraversal(accumulator::accumulate);
+        assertEquals(expectedResult, accumulator.compute());
     }
 
     @Test
@@ -90,6 +116,29 @@ public class BinaryTreeTest {
         return tree;
     }
 
+    private BinaryTree<Integer, String> buildIntegerKeyedTree()
+    {
+        BinaryTree<Integer, String> tree = new BinaryTree<>(String::compareTo);
+        tree.insert(new Node<>(1, "M", String::compareTo));
+        tree.insert(new Node<>(2, "E", String::compareTo));
+        tree.insert(new Node<>(3, "T", String::compareTo));
+        tree.insert(new Node<>(4, "C", String::compareTo));
+        tree.insert(new Node<>(5, "G", String::compareTo));
+        tree.insert(new Node<>(6, "P", String::compareTo));
+        tree.insert(new Node<>(7, "W", String::compareTo));
+
+        tree.insert(new Node<>(8,"A", String::compareTo));
+        tree.insert(new Node<>(9,"D", String::compareTo));
+        tree.insert(new Node<>(10, "N", String::compareTo));
+        tree.insert(new Node<>(11,"S", String::compareTo));
+        tree.insert(new Node<>(12, "U", String::compareTo));
+        tree.insert(new Node<>(13, "X", String::compareTo));
+
+
+        // add last word
+        return tree;
+    }
+   
     private BinaryTree<String, Integer> buildSimpleTree()
     {
         BinaryTree<String, Integer> tree = new BinaryTree<>(Integer::compareTo);
@@ -103,15 +152,47 @@ public class BinaryTreeTest {
 
         tree.insert(new Node<>("LEVEL3N1_LEFT", 1, Integer::compareTo));
         tree.insert(new Node<>("LEVEL3N1_RIGHT", 4, Integer::compareTo));
-        tree.insert(new Node<>("LEVEL3N2_LEFT", 5, Integer::compareTo));
-        tree.insert(new Node<>("LEVEL3N2_RIGHT", 7, Integer::compareTo));
-        tree.insert(new Node<>("LEVEL3N3_LEFT", 9, Integer::compareTo));
-        tree.insert(new Node<>("LEVEL3N3_RIGHT", 11, Integer::compareTo));
-        tree.insert(new Node<>("LEVEL3N4_LEFT", 12, Integer::compareTo));
+        tree.insert(new Node<>("LEVEL3N2_RIGHT", 5, Integer::compareTo));
+        tree.insert(new Node<>("LEVEL3N3_LEFT", 7, Integer::compareTo));
+        tree.insert(new Node<>("LEVEL4N1_LEFT", 9, Integer::compareTo));
+        tree.insert(new Node<>("LEVEL3N4_LEFT", 11, Integer::compareTo));
+        tree.insert(new Node<>("LEVEL4N2_RIGHT", 12, Integer::compareTo));
         tree.insert(new Node<>("LEVEL3N4_RIGHT", 15, Integer::compareTo));
 
 
         // add last word
         return tree;
+    }
+
+    /**
+     * Collects the key values at each depth and computes the average
+     */
+    class KeyAveragingAccumulator
+    {
+        final Map<Integer, AbstractMap.SimpleEntry<Integer, Integer>> averages =
+                new HashMap<>();
+
+        public void accumulate(INode<Integer, String> node, Integer depth)
+        {
+            Integer count = 1;
+            averages.merge(
+                    depth,
+                    new AbstractMap.SimpleEntry<>(node.getKey(), count),
+                    (first, second) ->
+                            new AbstractMap.SimpleEntry<>(first.getKey() + second.getKey(), first.getValue() + 1));
+        }
+
+        public Map<Integer, Double> compute()
+        {
+            Map<Integer, Double> results = new HashMap<>();
+            for (Map.Entry<Integer, AbstractMap.SimpleEntry<Integer, Integer>> entry : averages.entrySet())
+            {
+                AbstractMap.SimpleEntry<Integer, Integer> simpleEntry = entry.getValue();
+                double i = simpleEntry.getKey() / (double)simpleEntry.getValue();
+                results.put(entry.getKey(), i);
+            }
+
+            return results;
+        }
     }
 }
