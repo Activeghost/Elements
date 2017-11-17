@@ -29,11 +29,11 @@ public class BinaryTreeTest {
     public void donkeyKongTraversal() throws Exception
     {
         StringBuilder s = new StringBuilder();
-        String expected = "7 5 11 13 10 6 3 1 4 5 7 9 11 12 15";
+        String expected = "7 11 5 3 6 10 13 15 11 7 5 4 1 9 12";
         BinaryTree<String, Integer> tree = buildSimpleTree();
 
         tree.donkeyKongTraversal(n -> s.append(n.getValue()).append(" "));
-        assertEquals(expected, s.toString());
+        assertEquals(expected, s.toString().trim());
     }
 
     @Test
