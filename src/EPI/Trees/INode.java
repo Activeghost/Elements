@@ -27,4 +27,12 @@ public interface INode<K, V> extends Comparable<INode<K,V>>
 	void setLeft(INode<K, V> node);
 
 	void setRight(INode<K, V> node);
+
+	INode<K, V> getParent();
+
+	void setParent(INode<K, V> parent) ;
+
+	int getDepth();
+
+	void setDepth(int depth);
 }

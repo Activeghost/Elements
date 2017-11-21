@@ -48,7 +48,7 @@ public class BinaryTree<K, V> {
      * @param value the value to add
      */
     public void insert(K key, V value) {
-        INode<K, V> node = new Node<K, V>(key, value, _comparator);
+        INode<K, V> node = new Node<K, V>(null, key, value, _comparator);
         insert(node);
     }
 
@@ -87,8 +87,6 @@ public class BinaryTree<K, V> {
     {
         Deque<INode<K, V>> queue = new LinkedList<>();
         queue.push(_root);
-
-        traverseBreadthFirst(queue, consumer, 1);
     }
 
     /**
@@ -284,84 +282,3 @@ public class BinaryTree<K, V> {
     }
 }
 
-class Node<K, V> implements INode<K, V>
-{
-    private K key;
-    private V value;
-    private INode<K, V> left;
-    private INode<K, V> right;
-
-    private final Comparator<V> _comparator;
-
-    public Node(K k, V v, Comparator<V> comparator)
-    {
-        key = k;
-        value = v;
-        _comparator = comparator;
-    }
-
-    @Override
-    public int compareTo(INode<K, V> o) {
-        return _comparator.compare(this.value, o.getValue());
-    }
-
-    @Override
-    public boolean hasRightChild()
-    {
-        return right != null;
-    }
-
-    @Override
-    public boolean hasLeftChild()
-    {
-        return left != null;
-    }
-
-    @Override
-    public K getKey()
-    {
-        return key;
-    }
-
-    @Override
-    public void setKey(K theKey)
-    {
-        key = theKey;
-    }
-
-    @Override
-    public V getValue()
-    {
-        return value;
-    }
-
-    @Override
-    public void setValue(V theValue)
-    {
-        value = theValue;
-    }
-
-    @Override
-    public INode<K, V> getLeft()
-    {
-        return left;
-    }
-
-    @Override
-    public INode<K, V> getRight()
-    {
-        return right;
-    }
-
-    @Override
-    public void setLeft(INode<K, V> node)
-    {
-        left = node;
-    }
-
-    @Override
-    public void setRight(INode<K, V> node)
-    {
-        right = node;
-    }
-}

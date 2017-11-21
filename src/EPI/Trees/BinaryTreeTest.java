@@ -119,20 +119,20 @@ public class BinaryTreeTest {
     private BinaryTree<Integer, String> buildIntegerKeyedTree()
     {
         BinaryTree<Integer, String> tree = new BinaryTree<>(String::compareTo);
-        tree.insert(new Node<>(1, "M", String::compareTo));
-        tree.insert(new Node<>(2, "E", String::compareTo));
-        tree.insert(new Node<>(3, "T", String::compareTo));
-        tree.insert(new Node<>(4, "C", String::compareTo));
-        tree.insert(new Node<>(5, "G", String::compareTo));
-        tree.insert(new Node<>(6, "P", String::compareTo));
-        tree.insert(new Node<>(7, "W", String::compareTo));
+        tree.insert(new Node<>(null, 1, "M", String::compareTo));
+        tree.insert(new Node<>(null,2, "E", String::compareTo));
+        tree.insert(new Node<>(null,3, "T", String::compareTo));
+        tree.insert(new Node<>(null,4, "C", String::compareTo));
+        tree.insert(new Node<>(null,5, "G", String::compareTo));
+        tree.insert(new Node<>(null,6, "P", String::compareTo));
+        tree.insert(new Node<>(null,7, "W", String::compareTo));
 
-        tree.insert(new Node<>(8,"A", String::compareTo));
-        tree.insert(new Node<>(9,"D", String::compareTo));
-        tree.insert(new Node<>(10, "N", String::compareTo));
-        tree.insert(new Node<>(11,"S", String::compareTo));
-        tree.insert(new Node<>(12, "U", String::compareTo));
-        tree.insert(new Node<>(13, "X", String::compareTo));
+        tree.insert(new Node<>(null,8,"A", String::compareTo));
+        tree.insert(new Node<>(null,9,"D", String::compareTo));
+        tree.insert(new Node<>(null,10, "N", String::compareTo));
+        tree.insert(new Node<>(null,11,"S", String::compareTo));
+        tree.insert(new Node<>(null,12, "U", String::compareTo));
+        tree.insert(new Node<>(null,13, "X", String::compareTo));
 
 
         // add last word
@@ -142,22 +142,22 @@ public class BinaryTreeTest {
     private BinaryTree<String, Integer> buildSimpleTree()
     {
         BinaryTree<String, Integer> tree = new BinaryTree<>(Integer::compareTo);
-        tree.insert(new Node<>("ROOT", 7, Integer::compareTo));
-        tree.insert(new Node<>("LEVEL1_LEFT", 5, Integer::compareTo));
-        tree.insert(new Node<>("LEVEL1_RIGHT", 11, Integer::compareTo));
-        tree.insert(new Node<>("LEVEL2N1_LEFT", 3, Integer::compareTo));
-        tree.insert(new Node<>("LEVEL2N1_RIGHT", 6, Integer::compareTo));
-        tree.insert(new Node<>("LEVEL2N2_LEFT", 10, Integer::compareTo));
-        tree.insert(new Node<>("LEVEL2N2_RIGHT", 13, Integer::compareTo));
+        tree.insert(new Node<>(null,"ROOT", 7, Integer::compareTo));
+        tree.insert(new Node<>(null,"LEVEL1_LEFT", 5, Integer::compareTo));
+        tree.insert(new Node<>(null,"LEVEL1_RIGHT", 11, Integer::compareTo));
+        tree.insert(new Node<>(null,"LEVEL2N1_LEFT", 3, Integer::compareTo));
+        tree.insert(new Node<>(null,"LEVEL2N1_RIGHT", 6, Integer::compareTo));
+        tree.insert(new Node<>(null,"LEVEL2N2_LEFT", 10, Integer::compareTo));
+        tree.insert(new Node<>(null,"LEVEL2N2_RIGHT", 13, Integer::compareTo));
 
-        tree.insert(new Node<>("LEVEL3N1_LEFT", 1, Integer::compareTo));
-        tree.insert(new Node<>("LEVEL3N1_RIGHT", 4, Integer::compareTo));
-        tree.insert(new Node<>("LEVEL3N2_RIGHT", 5, Integer::compareTo));
-        tree.insert(new Node<>("LEVEL3N3_LEFT", 7, Integer::compareTo));
-        tree.insert(new Node<>("LEVEL4N1_LEFT", 9, Integer::compareTo));
-        tree.insert(new Node<>("LEVEL3N4_LEFT", 11, Integer::compareTo));
-        tree.insert(new Node<>("LEVEL4N2_RIGHT", 12, Integer::compareTo));
-        tree.insert(new Node<>("LEVEL3N4_RIGHT", 15, Integer::compareTo));
+        tree.insert(new Node<>(null,"LEVEL3N1_LEFT", 1, Integer::compareTo));
+        tree.insert(new Node<>(null,"LEVEL3N1_RIGHT", 4, Integer::compareTo));
+        tree.insert(new Node<>(null,"LEVEL3N2_RIGHT", 5, Integer::compareTo));
+        tree.insert(new Node<>(null,"LEVEL3N3_LEFT", 7, Integer::compareTo));
+        tree.insert(new Node<>(null,"LEVEL4N1_LEFT", 9, Integer::compareTo));
+        tree.insert(new Node<>(null,"LEVEL3N4_LEFT", 11, Integer::compareTo));
+        tree.insert(new Node<>(null,"LEVEL4N2_RIGHT", 12, Integer::compareTo));
+        tree.insert(new Node<>(null,"LEVEL3N4_RIGHT", 15, Integer::compareTo));
 
 
         // add last word
