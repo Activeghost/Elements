@@ -7,12 +7,14 @@ import java.util.function.Consumer;
 /**
  * Perform tree operations on nodes
  */
-public class TreeOperations<KeyType, ValueType>  {
+public class TreeOperations<KeyType, ValueType>
+{
     void traverse(INode<KeyType, ValueType> root,
-                                       Consumer<ValueType> preOrderFn,
-                                       Consumer<ValueType> inOrderFn,
-                                       Consumer<ValueType> postOrderFn){
-        if(root == null)
+            Consumer<ValueType> preOrderFn,
+            Consumer<ValueType> inOrderFn,
+            Consumer<ValueType> postOrderFn)
+    {
+        if (root == null)
         {
             return;
         }
@@ -33,19 +35,19 @@ public class TreeOperations<KeyType, ValueType>  {
 
     public BalancedStatusWithHeight checkBalancedStatus(INode<KeyType, ValueType> root)
     {
-        if(root == null)
+        if (root == null)
         {
             return new BalancedStatusWithHeight(true, -1);
         }
 
         BalancedStatusWithHeight leftResult = checkBalancedStatus(root.getLeft());
-        if(!leftResult.balanced)
+        if (!leftResult.balanced)
         {
             return leftResult;
         }
 
         BalancedStatusWithHeight rightResult = checkBalancedStatus(root.getRight());
-        if(!rightResult.balanced)
+        if (!rightResult.balanced)
         {
             return rightResult;
         }
@@ -58,19 +60,20 @@ public class TreeOperations<KeyType, ValueType>  {
 
     /**
      * Caclulates the height of the tree
-     * @param root the root node
+     *
+     * @param root     the root node
      * @param consumer the consumer function to record heights
      */
     public void caclulateHeight(INode<KeyType, ValueType> root, Consumer<Integer> consumer)
     {
-        if(root == null)
+        if (root == null)
         {
             return;
         }
 
         int depth = 0;
         INode<KeyType, ValueType> parent = root.getParent();
-        if(parent != null)
+        if (parent != null)
         {
             depth = parent.getDepth() + 1;
         }
@@ -78,16 +81,46 @@ public class TreeOperations<KeyType, ValueType>  {
         root.setDepth(depth);
 
         // only process the leaf nodes
-        if(isLeaf(root)) {
+        if (isLeaf(root))
+        {
             consumer.accept(root.getDepth());
         }
-        else {
+        else
+        {
             // traverse left
             caclulateHeight(root.getLeft(), consumer);
 
             // traverse right
             caclulateHeight(root.getRight(), consumer);
         }
+    }
+
+    /**
+     * Checks for tree symmetry
+     * @param root the tree root
+     * @return true if the tree is symmetric.
+     */
+    public boolean isSymmetric(INode<KeyType, ValueType> root)
+    {
+        return checkSymmetry(root.getLeft(), root.getRight());
+    }
+
+    private boolean checkSymmetry(INode<KeyType, ValueType> left, INode<KeyType, ValueType> right)
+    {
+        if(left == null && right == null)
+        {
+            return true;
+        }
+        else if(left == null || right == null)
+        {
+            return false;
+        }
+
+        boolean isSymmetric = left.compareTo(right) != 0;
+        isSymmetric &= checkSymmetry(left.getLeft(), right.getRight());
+        isSymmetric &= checkSymmetry(left.getRight(), right.getLeft());
+
+        return isSymmetric;
     }
 
     private boolean isLeaf(INode<KeyType, ValueType> root) {

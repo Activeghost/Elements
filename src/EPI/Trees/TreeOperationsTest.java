@@ -46,6 +46,24 @@ public class TreeOperationsTest {
                 getStringConsumer("PostOrder: %s"));
     }
 
+    @Test
+    public void isSymmetric()
+    {
+        TreeOperations<Integer, String> operations = new TreeOperations<>();
+
+        // case 1, both children are null .. symmetric
+        INode<Integer, String> root = new Node<>(null, 1, "A", String::compareTo);
+        Assert.assertTrue(operations.isSymmetric(root));
+
+        // case 2, one child is null .. not symmetric
+        root.setLeft(new Node<>(root, 2, "B", String::compareTo));
+        Assert.assertFalse(operations.isSymmetric(root));
+
+        // case 3, both childred are set and equal.. symmetric
+        root.setLeft(new Node<>(root, 2, "B", String::compareTo));
+        Assert.assertFalse(operations.isSymmetric(root));
+    }
+
     private Consumer<String> getStringConsumer(String format) {
         return (String value) -> System.out.printf(format, value);
     }
