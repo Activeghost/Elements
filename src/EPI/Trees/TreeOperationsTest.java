@@ -1,7 +1,9 @@
 package EPI.Trees;
 
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -13,6 +15,63 @@ import java.util.function.Consumer;
  * Tree operation
  */
 public class TreeOperationsTest {
+
+    @Rule
+    public ExpectedException thrown= ExpectedException.none();
+
+    @Test
+    public void getLowestCommonAncestorUsingParent()
+    {
+        INode<Integer, String> root = createTree();
+        TreeOperations<Integer, String> operations = new TreeOperations<>();
+        Assert.assertEquals(operations.getLowestCommonAncestor(root,
+                                                               root.getLeft(),
+                                                               root.getRight()),
+                            root);
+
+        Assert.assertEquals(operations.getLowestCommonAncestor(root,
+                                                               root.getLeft().getLeft().getLeft(),
+                                                               root.getRight()),
+                            root);
+
+        Assert.assertEquals(operations.getLowestCommonAncestor(root,
+                                                               root.getLeft().getLeft().getLeft(),
+                                                               root.getLeft().getRight()),
+                            root.getLeft());
+    }
+
+    @Test
+    public void getLowestCommonAncestor_withNullArgs_ThrowsException()
+    {
+        TreeOperations<Integer, String> operations = new TreeOperations<>();
+        INode<Integer, String> root = createTree();
+
+        thrown.expect(IllegalArgumentException.class);
+        thrown.expectMessage("The root, and both target nodes, must exist");
+        operations.getLowestCommonAncestor(root,null,null);
+    }
+
+    @Test
+    public void getLowestCommonAncestor()
+    {
+        INode<Integer, String> root = createTree();
+        TreeOperations<Integer, String> operations = new TreeOperations<>();
+        Assert.assertEquals(operations.getLowestCommonAncestor(root,
+                                                               root.getLeft(),
+                                                               root.getRight()),
+                            root);
+
+        Assert.assertEquals(operations.getLowestCommonAncestor(root,
+                                                               root.getLeft().getLeft().getLeft(),
+                                                               root.getRight()),
+                            root);
+
+        Assert.assertEquals(operations.getLowestCommonAncestor(root,
+                                                               root.getLeft().getLeft().getLeft(),
+                                                               root.getLeft().getRight()),
+                            root.getLeft());
+    }
+
     @Test
     public void checkBalancedStatus() throws Exception {
         INode<Integer, String> root = createTree();
@@ -98,4 +157,5 @@ public class TreeOperationsTest {
 
         return root;
     }
+
 }
