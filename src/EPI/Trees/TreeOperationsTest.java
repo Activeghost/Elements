@@ -5,10 +5,15 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 import java.util.function.Consumer;
 
 /**
@@ -18,6 +23,38 @@ public class TreeOperationsTest {
 
     @Rule
     public ExpectedException thrown= ExpectedException.none();
+
+
+    @Test
+    public void computeLowestCommonAncestor()
+    {
+    }
+
+    @Test
+    public void computeTreeFromTraversal()
+    {
+        List<String> inorder = new LinkedList<String>(
+                Arrays.asList("F","B", "A", "E", "H", "C", "D", "I", "G"));
+
+        Deque<String>  preorder = new LinkedList<String>(
+                Arrays.asList("H","B", "F", "E", "A", "C", "D", "G", "I"));
+
+        TreeOperations<String, String> operations = new TreeOperations<>();
+        INode<String, String> root = operations.computeTreeFromTraversal(inorder,
+                                            preorder,
+                                            "Test",
+                                            String::compareTo);
+
+        Assert.assertNotNull(root);
+        Map<Integer, Integer> map = new HashMap<>();
+        Set<Integer> integers = map.keySet();
+        operations.caclulateHeight(
+                root,
+                (depth) -> map.merge(depth, 1, (key, value) -> value + 1) );
+        Integer max = integers.stream().max(Integer::compareTo).orElse(0);
+
+        Assert.assertEquals(4, (long)max);
+    }
 
     @Test
     public void getLowestCommonAncestorUsingParent()
@@ -157,5 +194,4 @@ public class TreeOperationsTest {
 
         return root;
     }
-
 }

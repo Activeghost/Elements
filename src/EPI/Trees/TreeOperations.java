@@ -1,5 +1,9 @@
 package EPI.Trees;
 
+import java.util.Comparator;
+import java.util.Deque;
+import java.util.List;
+import java.util.Stack;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -159,6 +163,8 @@ public class TreeOperations<KeyType, ValueType>
         {
             return walkUp(b, bDepth - aDepth);
         }
+
+        return null;
     }
 
     private INode<KeyType, ValueType> findRoot(INode<KeyType, ValueType> node)
@@ -261,4 +267,68 @@ public class TreeOperations<KeyType, ValueType>
         return lcaInfo;
     }
 
+    /**
+     * Given keys from an inorder and a preorder traversal, reconstruct the tree structure.
+     * @param inorder the inorder traversal keyset
+     * @param preorder the preorder traversal keyset
+     * @param defaultNodeValue default values to use in node creation
+     * @param comparator the comparator for the values.
+     * @return
+     */
+    public INode<KeyType, ValueType> computeTreeFromTraversal(
+            List<KeyType> inorder,
+            Deque<KeyType> preorder,
+            ValueType defaultNodeValue,
+            Comparator<ValueType> comparator)
+    {
+        return getSubtreeFromTraversalData(null,
+                                           preorder,
+                                           inorder,
+                                           defaultNodeValue,
+                                           comparator);
+
+    }
+
+    private INode<KeyType, ValueType> getSubtreeFromTraversalData(
+            INode<KeyType, ValueType> parent,
+            Deque<KeyType> preorder,
+            List<KeyType> inorder,
+            ValueType defaultNodeValue,
+            Comparator<ValueType> comparator)
+    {
+        KeyType rootKey = preorder.peek();
+        final int rootIndex = inorder.indexOf(rootKey);
+
+        if(rootIndex < 0)
+        {
+            return null;
+        }
+        else{
+            preorder.pop();
+        }
+
+        // copy the preorder key as root node
+        INode<KeyType, ValueType> root =  new Node<>(parent, rootKey, defaultNodeValue, comparator);
+
+        // split list to left and right of type
+        if(!inorder.isEmpty())
+        {
+            List<KeyType> left = inorder.subList(0, rootIndex);
+            List<KeyType> right = inorder.subList(rootIndex + 1, inorder.size());
+
+            // process
+            root.setLeft(getSubtreeFromTraversalData(root,
+                                                     preorder,
+                                                     left,
+                                                     defaultNodeValue,
+                                                     comparator));
+            root.setRight(getSubtreeFromTraversalData(root,
+                                                      preorder,
+                                                      right,
+                                                      defaultNodeValue,
+                                                      comparator));
+        }
+
+        return root;
+    }
 }
