@@ -1,5 +1,8 @@
 package EPI.Trees;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Deque;
 import java.util.List;
@@ -8,6 +11,8 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
+import EPI.Arrays.ArrayOperations;
+import javafx.util.Pair;
 import sun.plugin.dom.exception.InvalidStateException;
 
 /**
@@ -331,4 +336,67 @@ public class TreeOperations<KeyType, ValueType>
 
         return root;
     }
+
+	/**
+	 * Gets a maxtree from a list of values. maxTree(N e I) => Tree with root as max value,
+	 * its left child is the max value to the left of the root item and the right is the max
+	 * to the right.
+	 * @param values
+	 * @return
+	 */
+	public INode<Integer, Integer> getMaxTree(Integer[] values)
+	{
+		return getMaxTreeHelper(values);
+
+	}
+
+	private INode<Integer, Integer>  getMaxTreeHelper(Integer[] values)
+	{
+		if(values == null || values.length == 0)
+		{
+			return null;
+		}
+
+
+		final Pair<Integer, Integer> maxValuePair = getMaxValue(values);
+		final Integer value = maxValuePair.getValue();
+		INode<Integer, Integer> root = new Node<Integer, Integer>(
+				null,
+				value,
+				value,
+				Integer::compareTo);
+
+		if(values.length > 1)
+		{
+			final Integer maxValueIndex = maxValuePair.getKey();
+			final INode<Integer, Integer> lChild =
+					getMaxTreeHelper(Arrays.copyOfRange(values, 0, maxValueIndex));
+
+			final INode<Integer, Integer> rChild =
+					getMaxTreeHelper(Arrays.copyOfRange(values, maxValueIndex + 1, values.length));
+
+			root.setLeft(lChild);
+			root.setRight(rChild);
+		}
+
+		return root;
+	}
+
+	private Pair<Integer, Integer> getMaxValue(Integer[] values)
+	{
+		int maxSeenValue = Integer.MIN_VALUE;
+		int maxIndex = -1;
+
+		for (int i = 0; i < values.length; i++)
+		{
+			final Integer value = values[i];
+			if(maxSeenValue < value)
+			{
+				maxSeenValue = value;
+				maxIndex = i;
+			}
+		}
+
+		return new Pair<Integer, Integer>(maxIndex, maxSeenValue);
+	}
 }

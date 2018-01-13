@@ -160,6 +160,22 @@ public class TreeOperationsTest {
         Assert.assertFalse(operations.isSymmetric(root));
     }
 
+    @Test
+    public void getMaxTree()
+    {
+        TreeOperations<Integer, Integer> operations = new TreeOperations<>();
+        Integer[] values = {1, 8, 3, 5, 6, 10};
+        INode<Integer, Integer> tree = operations.getMaxTree(values);
+        final INode<Integer, Integer> left = tree.getLeft();
+        final INode<Integer, Integer> right = tree.getRight();
+
+        Assert.assertEquals(10, (int)tree.getValue());
+        Assert.assertEquals(8, (int)left.getValue());
+        Assert.assertEquals(null, right);
+        Assert.assertEquals(1, (int)left.getLeft().getValue());
+        Assert.assertEquals(6, (int)left.getRight().getValue());
+    }
+
     private Consumer<String> getStringConsumer(String format) {
         return (String value) -> System.out.printf(format, value);
     }
